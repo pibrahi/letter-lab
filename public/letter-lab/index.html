@@ -3,17 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Letter Lab — Word Guessing Game for Kids</title>
-<meta name="description" content="Guess the hidden word one letter at a time. A Wordle-style word game built for kids, with progressive hints and unlimited guesses. Free, no ads.">
-<meta name="keywords" content="word guessing game kids, wordle for kids, spelling game, letter game, educational word game">
+<title>Letter Lab — Word Spelling Activity for Kids</title>
+<meta name="description" content="Guess the hidden word one letter at a time. A word spelling activity for kids with progressive hints and unlimited tries. Free, no ads.">
+<meta name="keywords" content="word spelling activity kids, letter recognition, spelling practice, educational word activity, kids literacy">
 <link rel="canonical" href="https://letter-lab.p-ibrahim.workers.dev/letter-lab/">
 <meta property="og:type"        content="website">
 <meta property="og:url"         content="https://letter-lab.p-ibrahim.workers.dev/letter-lab/">
-<meta property="og:title"       content="Letter Lab — Word Guessing Game for Kids">
-<meta property="og:description" content="Guess the hidden word letter by letter. Wordle-style fun built for kids, with hints. Free, no ads.">
+<meta property="og:title"       content="Letter Lab — Word Spelling Activity for Kids">
+<meta property="og:description" content="Guess the hidden word letter by letter. A word spelling activity for kids with hints. Free, no ads.">
 <meta name="twitter:card"        content="summary">
-<meta name="twitter:title"       content="Letter Lab — Word Guessing Game for Kids">
-<meta name="twitter:description" content="Wordle-style word guessing built for kids. Free with progressive hints.">
+<meta name="twitter:title"       content="Letter Lab — Word Spelling Activity for Kids">
+<meta name="twitter:description" content="Word spelling activity for kids with progressive hints. Free, no ads.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔤</text></svg>">
 <script type="application/ld+json">
 {
@@ -22,7 +22,7 @@
   "name": "Letter Lab",
   "url": "https://letter-lab.p-ibrahim.workers.dev/letter-lab/",
   "description": "Guess the hidden word one letter at a time, with progressive hints.",
-  "applicationCategory": "GameApplication",
+  "applicationCategory": "EducationalApplication",
   "operatingSystem": "Web",
   "offers": {"@type":"Offer","price":"0","priceCurrency":"USD"},
   "audience": {"@type":"EducationalAudience","suggestedMinAge":"4","suggestedMaxAge":"8"}
@@ -461,6 +461,15 @@ body.grownup .hint-level.l3 { color: var(--viridian-lt); }
   font-family: var(--font-mono); font-size: 0.85rem; letter-spacing: 0.5px;
 }
 
+/* ── GUIDED EMOJI ── */
+#guidedEmoji {
+  font-size: 5.5rem; line-height: 1; text-align: center;
+  margin-bottom: 14px; display: none;
+  animation: emojiPop 0.45s cubic-bezier(.34,1.56,.64,1);
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
+}
+@keyframes emojiPop { from{transform:scale(0.4);opacity:0} to{transform:scale(1);opacity:1} }
+
 @media (max-width: 400px) {
   .tile { font-size: 1.4rem; }
   .key  { height: 50px; font-size: 0.8rem; }
@@ -484,7 +493,7 @@ body.grownup .hint-level.l3 { color: var(--viridian-lt); }
     </div>
     <div class="header-controls">
       <button class="btn-next" id="nextBtn" title="Next word">NEXT</button>
-      <a class="btn-icon" href="../" title="Game Centre" style="font-size:0.9rem;text-decoration:none;">🏠</a>
+      <a class="btn-icon" href="../" title="Learning Centre" style="font-size:0.9rem;text-decoration:none;">🏠</a>
       <button class="btn-icon" id="helpBtn" title="How to play" style="font-family:var(--font-mono);">?</button>
       <button class="gear-btn" id="adminBtn" title="Settings">
         <span class="dot"></span>⚙
@@ -496,6 +505,8 @@ body.grownup .hint-level.l3 { color: var(--viridian-lt); }
     <span class="hint-tag" id="hintTag">HINT</span>
     <span id="hintText"></span>
   </div>
+
+  <div id="guidedEmoji"></div>
 
   <div class="grid-wrapper"><div id="grid"></div></div>
   <div id="keyboard"></div>
@@ -589,7 +600,7 @@ body.grownup .hint-level.l3 { color: var(--viridian-lt); }
     <p class="admin-sub">Settings, words, and preferences</p>
 
     <div class="admin-section">
-      <h3>Game Settings</h3>
+      <h3>Settings</h3>
       <div class="af">
         <label>Word Length</label>
         <div style="display:flex;gap:8px;">
@@ -609,6 +620,13 @@ body.grownup .hint-level.l3 { color: var(--viridian-lt); }
         <button class="abtn" id="grownupToggleBtn" style="width:100%;text-align:left;display:flex;align-items:center;gap:8px;">
           <span id="grownupDot" style="width:10px;height:10px;border-radius:50%;background:#3d6050;display:inline-block;flex-shrink:0;"></span>
           <span id="grownupLabel">Grownup mode: OFF</span>
+        </button>
+      </div>
+      <div class="af" style="margin-top:12px;">
+        <label>Guided Mode (G) — shows answer emoji for little ones 👶</label>
+        <button class="abtn" id="guidedToggleBtn" style="width:100%;text-align:left;display:flex;align-items:center;gap:8px;">
+          <span id="guidedDot" style="width:10px;height:10px;border-radius:50%;background:#3d6050;display:inline-block;flex-shrink:0;"></span>
+          <span id="guidedLabel">Guided mode: OFF</span>
         </button>
       </div>
       <div class="abtn-row" style="margin-top:12px;">
@@ -827,6 +845,7 @@ let state = {
   wordLength:   5,
   hintsEnabled: true,
   grownup:      false,
+  guidedMode:   false,
   guesses:      [],
   currentGuess: [],
   gameOver:     false,
@@ -841,6 +860,7 @@ try {
     state.wordLength   = p.wordLength   || 5;
     state.hintsEnabled = p.hintsEnabled !== undefined ? p.hintsEnabled : true;
     state.grownup      = p.grownup      || false;
+    state.guidedMode   = p.guidedMode   || false;
     state.stats        = p.stats        || state.stats;
   }
 } catch(e) {}
@@ -849,9 +869,20 @@ function saveState() {
   try {
     localStorage.setItem('letterLabState3', JSON.stringify({
       wordBank: state.wordBank, wordLength: state.wordLength,
-      hintsEnabled: state.hintsEnabled, grownup: state.grownup, stats: state.stats,
+      hintsEnabled: state.hintsEnabled, grownup: state.grownup,
+      guidedMode: state.guidedMode, stats: state.stats,
     }));
   } catch(e) {}
+}
+
+// =====================================================================
+//  GUIDED MODE — extract trailing emoji from hints[2]
+// =====================================================================
+function getWordEmoji(entry) {
+  if (!entry || !entry.hints) return null;
+  const hint = entry.hints[2] || entry.hints[1] || entry.hints[0] || '';
+  const matches = [...hint.matchAll(/\p{Extended_Pictographic}/gu)];
+  return matches.length ? matches[matches.length - 1][0] : null;
 }
 
 // =====================================================================
@@ -873,7 +904,21 @@ function applyGrownup() {
   if (lbl) lbl.textContent = `Grownup mode: ${state.grownup ? 'ON' : 'OFF'}`;
   if (dot) dot.style.background = state.grownup ? '#52c4a0' : '#3d6050';
   if (btn) { btn.style.background = state.grownup ? 'rgba(64,130,109,0.2)' : 'rgba(255,255,255,0.05)'; btn.style.color = state.grownup ? '#52c4a0' : '#52a88e'; }
-  document.getElementById('logoSub').textContent = state.grownup ? 'Grownup Mode — Active' : 'Word Experiment';
+  let subText = 'Word Experiment';
+  if (state.grownup)      subText = 'Grownup Mode — Active';
+  else if (state.guidedMode) subText = '👶 Guided Mode — ON';
+  document.getElementById('logoSub').textContent = subText;
+}
+
+function syncGuidedUI() {
+  const lbl = document.getElementById('guidedLabel');
+  const dot = document.getElementById('guidedDot');
+  const btn = document.getElementById('guidedToggleBtn');
+  if (!lbl) return;
+  lbl.textContent = state.guidedMode ? 'Guided mode: ON — emoji shown 👶' : 'Guided mode: OFF';
+  dot.style.background = state.guidedMode ? '#52c4a0' : '#3d6050';
+  btn.style.background = state.guidedMode ? 'rgba(64,130,109,0.2)' : 'rgba(255,255,255,0.05)';
+  btn.style.color      = state.guidedMode ? '#52c4a0' : '#52a88e';
 }
 
 function syncLenUI() {
@@ -905,6 +950,23 @@ function startGame(entry) {
   state.currentGuess  = [];
   state.gameOver      = false;
   renderGrid(); renderKeyboard(); renderHint();
+  // Guided mode: show answer emoji from the start
+  const emojiEl = document.getElementById('guidedEmoji');
+  if (state.guidedMode) {
+    const emoji = getWordEmoji(e);
+    if (emoji) {
+      emojiEl.textContent = emoji;
+      emojiEl.style.display = 'block';
+      // re-trigger animation
+      emojiEl.style.animation = 'none';
+      void emojiEl.offsetWidth;
+      emojiEl.style.animation = '';
+    } else {
+      emojiEl.style.display = 'none';
+    }
+  } else {
+    emojiEl.style.display = 'none';
+  }
   document.getElementById('endOverlay').classList.remove('show');
   updateAdminCurrentWord();
 }
@@ -1150,7 +1212,7 @@ document.getElementById('gateOverlay').addEventListener('click',e=>{ if(e.target
 function openAdmin() {
   updateAdminCurrentWord(); updateAdminStats();
   document.getElementById('hintsEnabledSelect').value=state.hintsEnabled?'yes':'no';
-  syncLenUI(); applyGrownup();
+  syncLenUI(); applyGrownup(); syncGuidedUI();
   document.getElementById('adminOverlay').classList.add('show');
 }
 function closeAdmin() { document.getElementById('adminOverlay').classList.remove('show'); }
@@ -1348,6 +1410,7 @@ document.querySelectorAll('.len-opt').forEach(btn => {
   btn.addEventListener('click', () => { state.wordLength=parseInt(btn.dataset.len); syncLenUI(); });
 });
 document.getElementById('grownupToggleBtn').addEventListener('click', () => { state.grownup=!state.grownup; applyGrownup(); });
+document.getElementById('guidedToggleBtn').addEventListener('click', () => { state.guidedMode=!state.guidedMode; syncGuidedUI(); applyGrownup(); });
 document.getElementById('saveSettingsBtn').addEventListener('click', () => {
   state.hintsEnabled=document.getElementById('hintsEnabledSelect').value==='yes';
   saveState(); startGame(); showToast('SETTINGS SAVED'); closeAdmin();
@@ -1381,7 +1444,7 @@ document.getElementById('resetStatsBtn').addEventListener('click', () => {
 // =====================================================================
 //  BOOT
 // =====================================================================
-applyGrownup(); syncLenUI(); startGame();
+applyGrownup(); syncGuidedUI(); syncLenUI(); startGame();
 </script>
 </body>
 </html>
