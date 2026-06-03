@@ -27,7 +27,7 @@ body.grownup {
   --correct: #52a88e; --correct-b: #3d8870; --correct-txt: #0c1210;
   --present: #e6b830; --present-b: #c49a1a; --present-txt: #0c0900;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
 html { height: 100%; }
 body {
   font-family: var(--font-sans);
