@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Puzzle Words</title>
+<link rel="stylesheet" href="../_shared/lab.css">
+<style>
+.game-area {
+  width: 100%; max-width: 520px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 22px; padding: 0 0 40px;
+}
+
+/* Progress stars */
+.star-bar { display: flex; gap: 10px; justify-content: center; }
+.star { font-size: 2rem; filter: grayscale(1) opacity(0.3); transition: filter 0.3s, transform 0.3s; }
+.star.lit { filter: none; transform: scale(1.15); }
+@keyframes starPop { 0%{transform:scale(1)} 50%{transform:scale(1.7)} 100%{transform:scale(1.15)} }
+.star.pop { animation: starPop 0.4s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+/* Emoji */
+.big-emoji {
+  font-size: 6.5rem; line-height: 1; text-align: center;
+  filter: drop-shadow(0 4px 14px rgba(0,0,0,0.12));
+}
+@keyframes emojiBounce { 0%{transform:scale(1)} 40%{transform:scale(1.22)} 100%{transform:scale(1)} }
+.big-emoji.bounce { animation: emojiBounce 0.5s cubic-bezier(.34,1.56,.64,1); }
+
+/* Mode label */
+.mode-label {
+  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
+  padding: 3px 10px; border-radius: 4px; letter-spacing: 1.5px; text-transform: uppercase;
+  background: rgba(107,130,120,0.14); color: var(--text2); border: 1.5px solid var(--border2);
+}
+
+/* Puzzle slots (Tile Drop) */
+.puzzle-slots { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.puzzle-slot {
+  width: 58px; height: 66px; border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 1.9rem; font-weight: 700;
+  text-transform: uppercase; transition: all 0.18s;
+  border: 2px solid var(--border2); background: var(--surface); color: var(--text);
+}
+.puzzle-slot.blank {
+  border: 3px dashed var(--viridian); background: var(--viridian-bg);
+  color: transparent;
+}
+.puzzle-slot.selected-target {
+  border: 3px solid var(--present); background: rgba(212,160,23,0.1);
+  animation: pulse 0.8s ease infinite;
+}
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(212,160,23,0.4)} 50%{box-shadow:0 0 0 6px rgba(212,160,23,0)} }
+.puzzle-slot.correct { background: var(--correct); border: 2px solid var(--correct-b); color: var(--correct-txt); }
+.puzzle-slot.shake { animation: shake 0.42s ease; }
+
+/* Tile buttons */
+.tile-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.tile-btn {
+  width: 62px; height: 70px; border-radius: var(--radius-lg);
+  border: 3px solid var(--viridian); background: var(--viridian-bg);
+  font-family: var(--font-mono); font-size: 2rem; font-weight: 700;
+  color: var(--viridian); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  text-transform: uppercase; box-shadow: 0 4px 0 var(--viridian-dk);
+  transition: all 0.1s; user-select: none;
+}
+.tile-btn:hover:not(:disabled) { background: var(--viridian); color: #fff; }
+.tile-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+.tile-btn.used { opacity: 0; pointer-events: none; transition: opacity 0.15s; }
+.tile-btn:disabled { opacity: 0.3; pointer-events: none; }
+
+/* Sentence mode */
+.sentence-display {
+  font-family: var(--font-mono); font-size: 1.35rem; font-weight: 700;
+  color: var(--text); text-align: center; line-height: 1.7; letter-spacing: 0.5px;
+  padding: 16px 20px; border: 2px solid var(--border); border-radius: var(--radius-lg);
+  background: var(--surface); width: 100%;
+}
+.sentence-blank {
+  display: inline-block; min-width: 80px; border-bottom: 3px solid var(--viridian);
+  color: var(--viridian); text-align: center;
+}
+
+.picture-options { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.picture-opt {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 14px 16px; border-radius: var(--radius-lg);
+  border: 3px solid var(--border2); background: var(--surface);
+  cursor: pointer; box-shadow: 0 4px 0 var(--border2);
+  transition: all 0.1s; user-select: none; min-width: 90px;
+}
+.picture-opt:hover:not(:disabled) { border-color: var(--viridian); background: var(--viridian-bg); box-shadow: 0 4px 0 var(--viridian); }
+.picture-opt:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+.picture-opt:disabled { opacity: 0.35; pointer-events: none; }
+.picture-opt.correct-flash { border-color: var(--correct-b); background: rgba(64,130,109,0.15); box-shadow: 0 4px 0 var(--correct-b); }
+.picture-opt.wrong-flash   { border-color: #b91c1c; background: #fee2e2; animation: shake 0.42s ease; }
+.opt-emoji { font-size: 2.8rem; line-height: 1; }
+.opt-word  { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; }
+
+/* Rhyme mode */
+.rhyme-prompt {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 16px 24px; border: 2px solid var(--border); border-radius: var(--radius-lg);
+  background: var(--surface); text-align: center;
+}
+.rhyme-word { font-family: var(--font-mono); font-size: 2rem; font-weight: 700; color: var(--text); letter-spacing: 3px; }
+.rhyme-sub  { font-size: 0.82rem; color: var(--text3); font-family: var(--font-mono); }
+
+/* Feedback */
+.result-msg {
+  font-family: var(--font-mono); font-size: 1rem; font-weight: 700;
+  color: var(--viridian); letter-spacing: 0.5px; min-height: 1.5em; text-align: center;
+}
+
+/* Admin */
+.mode-opts { display: flex; gap: 6px; flex-wrap: wrap; }
+.mode-opt {
+  flex: 1; min-width: 80px; padding: 9px 6px; border-radius: 5px; border: 1px solid #1a2e25;
+  font-family: var(--font-mono); font-size: 0.65rem; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.3px; text-transform: uppercase; text-align: center;
+  background: rgba(255,255,255,0.05); color: #52a88e; transition: all 0.14s;
+}
+.mode-opt.active { background: #40826D; color: #fff; border-color: #40826D; }
+
+@media (max-width: 400px) {
+  .big-emoji { font-size: 5rem; }
+  .puzzle-slot { width: 46px; height: 54px; font-size: 1.5rem; }
+  .tile-btn { width: 52px; height: 60px; font-size: 1.7rem; }
+  .opt-emoji { font-size: 2.2rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- GATE -->
+<div class="admin-overlay" id="gateOverlay">
+  <div class="admin-modal" style="max-width:320px;text-align:center;">
+    <h2 style="margin-bottom:18px;">// Grownup Check</h2>
+    <p style="font-family:var(--font-mono);font-size:0.78rem;color:#52a88e;margin-bottom:20px;">2 × 5 = ?</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:14px;" id="gateButtons"></div>
+    <p id="gateError" style="font-family:var(--font-mono);font-size:0.72rem;color:#ef4444;min-height:1.2em;"></p>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-modal">
+    <h2>// Grownup Mode</h2>
+    <p class="admin-sub">Puzzle Words settings</p>
+
+    <div class="admin-section">
+      <h3>Activity</h3>
+      <div class="mode-opts">
+        <button class="mode-opt active" data-mode="tiledrop">Tile Drop</button>
+        <button class="mode-opt" data-mode="sentence">Finish Sentence</button>
+        <button class="mode-opt" data-mode="rhyme">Rhyme Time</button>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h3>Stats</h3>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-num" id="statSolved">0</div><div class="stat-lbl">Solved</div></div>
+        <div class="stat-card"><div class="stat-num" id="statStreak">0</div><div class="stat-lbl">Streak</div></div>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h3>Display</h3>
+      <button class="abtn" id="grownupToggleBtn" style="width:100%;text-align:left;display:flex;align-items:center;gap:8px;">
+        <span id="grownupDot" style="width:10px;height:10px;border-radius:50%;background:#3d6050;display:inline-block;flex-shrink:0;"></span>
+        <span id="grownupLabel">Dark mode: OFF</span>
+      </button>
+    </div>
+
+    <div style="text-align:center;margin-top:6px;">
+      <button class="abtn ghost" id="closeAdminBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="gameView" class="view active" style="padding:0 16px 20px;">
+  <header>
+    <div class="logo-wrap">
+      <div class="logo">🧩 Puzzle<span>Words</span></div>
+      <div class="logo-sub" id="modeSub">Tile Drop</div>
+    </div>
+    <div class="header-controls">
+      <button class="btn-next" id="skipBtn">SKIP →</button>
+      <a class="btn-icon" href="../" title="Game Centre" style="font-size:0.9rem;text-decoration:none;">🏠</a>
+      <button class="gear-btn" id="adminBtn"><span class="dot"></span>⚙</button>
+    </div>
+  </header>
+
+  <div class="game-area">
+    <div class="star-bar">
+      <span class="star" id="star0">⭐</span>
+      <span class="star" id="star1">⭐</span>
+      <span class="star" id="star2">⭐</span>
+      <span class="star" id="star3">⭐</span>
+      <span class="star" id="star4">⭐</span>
+    </div>
+
+    <div class="big-emoji" id="bigEmoji" style="display:none;"></div>
+    <div class="mode-label" id="modeLabel">TILE DROP</div>
+    <div class="puzzle-slots"   id="puzzleSlots"   style="display:none;"></div>
+    <div class="rhyme-prompt"   id="rhymePrompt"   style="display:none;"></div>
+    <div class="sentence-display" id="sentenceDisplay" style="display:none;"></div>
+    <div class="result-msg"     id="resultMsg"></div>
+    <div class="tile-btns"      id="tileBtns"      style="display:none;"></div>
+    <div class="picture-options" id="pictureOptions" style="display:none;"></div>
+  </div>
+
+  <footer>Made with 🩵 for L&amp;G</footer>
+</div>
+
+<script src="../_shared/lab.js"></script>
+<script>
+// ── WORD BANKS ─────────────────────────────────────────────
+const TILE_WORDS = [
+  {w:'CAT',e:'🐱'},{w:'DOG',e:'🐶'},{w:'FOX',e:'🦊'},{w:'BEE',e:'🐝'},
+  {w:'OWL',e:'🦉'},{w:'SUN',e:'☀️'},{w:'HAT',e:'🎩'},{w:'CUP',e:'☕'},
+  {w:'BOX',e:'📦'},{w:'BUS',e:'🚌'},{w:'CAR',e:'🚗'},{w:'MAP',e:'🗺️'},
+  {w:'BEAR',e:'🐻'},{w:'DUCK',e:'🦆'},{w:'FISH',e:'🐟'},{w:'FROG',e:'🐸'},
+  {w:'LION',e:'🦁'},{w:'STAR',e:'⭐'},{w:'MOON',e:'🌙'},{w:'CAKE',e:'🎂'},
+  {w:'BIRD',e:'🐦'},{w:'CRAB',e:'🦀'},{w:'RAIN',e:'🌧️'},{w:'BOOK',e:'📚'},
+  {w:'TIGER',e:'🐯'},{w:'HORSE',e:'🐴'},{w:'APPLE',e:'🍎'},{w:'GRAPE',e:'🍇'},
+  {w:'PIZZA',e:'🍕'},{w:'EAGLE',e:'🦅'},{w:'PANDA',e:'🐼'},{w:'TRAIN',e:'🚂'},
+];
+
+const SENTENCES = [
+  {s:'The ___ can fly.',       a:{w:'Bird',  e:'🐦'}, d:[{w:'Fish', e:'🐟'},{w:'Pig',  e:'🐷'}]},
+  {s:'The ___ can swim.',      a:{w:'Fish',  e:'🐟'}, d:[{w:'Cat',  e:'🐱'},{w:'Hen',  e:'🐔'}]},
+  {s:'The ___ says moo.',      a:{w:'Cow',   e:'🐮'}, d:[{w:'Dog',  e:'🐶'},{w:'Fox',  e:'🦊'}]},
+  {s:'The ___ makes honey.',   a:{w:'Bee',   e:'🐝'}, d:[{w:'Ant',  e:'🐜'},{w:'Owl',  e:'🦉'}]},
+  {s:'The ___ has stripes.',   a:{w:'Tiger', e:'🐯'}, d:[{w:'Duck', e:'🦆'},{w:'Bear', e:'🐻'}]},
+  {s:'The ___ lives in a hive.',a:{w:'Bee',  e:'🐝'}, d:[{w:'Fish', e:'🐟'},{w:'Frog', e:'🐸'}]},
+  {s:'The ___ hops.',          a:{w:'Frog',  e:'🐸'}, d:[{w:'Lion', e:'🦁'},{w:'Cow',  e:'🐮'}]},
+  {s:'The ___ is the biggest.', a:{w:'Whale',e:'🐋'}, d:[{w:'Bee',  e:'🐝'},{w:'Ant',  e:'🐜'}]},
+  {s:'The ___ has black and white stripes.',a:{w:'Zebra',e:'🦓'},d:[{w:'Lion',e:'🦁'},{w:'Bear',e:'🐻'}]},
+  {s:'You bake a ___ for a birthday.',a:{w:'Cake',e:'🎂'},d:[{w:'Fish',e:'🐟'},{w:'Book',e:'📚'}]},
+  {s:'You ride on a ___.',     a:{w:'Train', e:'🚂'}, d:[{w:'Apple',e:'🍎'},{w:'Moon', e:'🌙'}]},
+  {s:'The ___ shines at night.',a:{w:'Moon', e:'🌙'}, d:[{w:'Duck', e:'🦆'},{w:'Cake', e:'🎂'}]},
+  {s:'The ___ is a big sea animal.',a:{w:'Whale',e:'🐋'},d:[{w:'Bee',e:'🐝'},{w:'Fox',e:'🦊'}]},
+  {s:'You eat a ___ for a snack.',a:{w:'Apple',e:'🍎'},d:[{w:'Frog',e:'🐸'},{w:'Star',e:'⭐'}]},
+  {s:'The ___ twinkles in the sky.',a:{w:'Star',e:'⭐'},d:[{w:'Pig',e:'🐷'},{w:'Cake',e:'🎂'}]},
+];
+
+const RHYMES = [
+  {p:{w:'CAT', e:'🐱'}, a:{w:'BAT',   e:'🦇'}, d:[{w:'DOG',   e:'🐶'},{w:'BEE',  e:'🐝'}]},
+  {p:{w:'DOG', e:'🐶'}, a:{w:'LOG',   e:'🪵'}, d:[{w:'CAT',   e:'🐱'},{w:'HEN',  e:'🐔'}]},
+  {p:{w:'BEE', e:'🐝'}, a:{w:'TREE',  e:'🌳'}, d:[{w:'PIG',   e:'🐷'},{w:'COW',  e:'🐮'}]},
+  {p:{w:'HEN', e:'🐔'}, a:{w:'PEN',   e:'✏️'}, d:[{w:'FOX',   e:'🦊'},{w:'BEE',  e:'🐝'}]},
+  {p:{w:'BEAR',e:'🐻'}, a:{w:'PEAR',  e:'🍐'}, d:[{w:'FISH',  e:'🐟'},{w:'DUCK', e:'🦆'}]},
+  {p:{w:'FISH',e:'🐟'}, a:{w:'DISH',  e:'🍽️'}, d:[{w:'BEAR',  e:'🐻'},{w:'FROG', e:'🐸'}]},
+  {p:{w:'DUCK',e:'🦆'}, a:{w:'TRUCK', e:'🚚'}, d:[{w:'LION',  e:'🦁'},{w:'BEAR', e:'🐻'}]},
+  {p:{w:'STAR',e:'⭐'}, a:{w:'CAR',   e:'🚗'}, d:[{w:'MOON',  e:'🌙'},{w:'FISH', e:'🐟'}]},
+  {p:{w:'SUN', e:'☀️'}, a:{w:'BUN',   e:'🍞'}, d:[{w:'MOON',  e:'🌙'},{w:'RAIN', e:'🌧️'}]},
+  {p:{w:'MOON',e:'🌙'}, a:{w:'SPOON', e:'🥄'}, d:[{w:'STAR',  e:'⭐'},{w:'SUN',  e:'☀️'}]},
+  {p:{w:'CAKE',e:'🎂'}, a:{w:'SNAKE', e:'🐍'}, d:[{w:'DUCK',  e:'🦆'},{w:'BEAR', e:'🐻'}]},
+  {p:{w:'FROG',e:'🐸'}, a:{w:'LOG',   e:'🪵'}, d:[{w:'DUCK',  e:'🦆'},{w:'CAT',  e:'🐱'}]},
+  {p:{w:'WHALE',e:'🐋'},a:{w:'SNAIL', e:'🐌'}, d:[{w:'SHARK', e:'🦈'},{w:'BEAR', e:'🐻'}]},
+  {p:{w:'SNAKE',e:'🐍'},a:{w:'CAKE',  e:'🎂'}, d:[{w:'BEAR',  e:'🐻'},{w:'FROG', e:'🐸'}]},
+  {p:{w:'TRAIN',e:'🚂'},a:{w:'RAIN',  e:'🌧️'}, d:[{w:'STAR',  e:'⭐'},{w:'MOON', e:'🌙'}]},
+];
+
+// ── STATE ──────────────────────────────────────────────────
+const st = {
+  mode: 'tiledrop', grownup: false,
+  solved: 0, streak: 0, badgeProgress: 0,
+  current: null, tapInput: [], locked: false,
+  sentIdx: -1, rhymeIdx: -1,
+};
+
+try {
+  const s = JSON.parse(localStorage.getItem('pw_v1') || '{}');
+  if (s.mode)    st.mode    = s.mode;
+  if (s.grownup) st.grownup = s.grownup;
+  if (s.solved)  st.solved  = s.solved;
+  if (s.streak)  st.streak  = s.streak;
+} catch(e) {}
+
+function save() {
+  try { localStorage.setItem('pw_v1', JSON.stringify({mode:st.mode,grownup:st.grownup,solved:st.solved,streak:st.streak})); } catch(e) {}
+}
+
+function hideAll() {
+  ['bigEmoji','puzzleSlots','rhymePrompt','sentenceDisplay','tileBtns','pictureOptions']
+    .forEach(id => document.getElementById(id).style.display = 'none');
+}
+
+// ── TILE DROP ─────────────────────────────────────────────
+function startTileDrop() {
+  st.locked   = false;
+  st.tapInput = [];
+  const pool  = TILE_WORDS.filter(x => !st.current || x.w !== st.current.w);
+  st.current  = pool[Math.floor(Math.random() * pool.length)];
+  const word  = st.current.w;
+  hideAll();
+  document.getElementById('bigEmoji').style.display    = 'block';
+  document.getElementById('bigEmoji').textContent      = st.current.e;
+  document.getElementById('puzzleSlots').style.display = 'flex';
+  document.getElementById('tileBtns').style.display    = 'flex';
+  document.getElementById('modeLabel').textContent     = 'TILE DROP';
+  document.getElementById('modeSub').textContent       = 'Tile Drop';
+  document.getElementById('resultMsg').textContent     = 'Tap tiles to fill the blanks!';
+
+  // Pick 1 or 2 blank positions
+  const numBlanks = word.length >= 4 ? 2 : 1;
+  const positions = [...Array(word.length).keys()].sort(() => Math.random()-0.5).slice(0, numBlanks);
+  const blanks    = new Set(positions);
+  st.blanks       = [...blanks].sort((a,b) => a-b);
+  st.blankQueue   = [...st.blanks];
+
+  const slotsEl = document.getElementById('puzzleSlots');
+  slotsEl.innerHTML = '';
+  for (let i = 0; i < word.length; i++) {
+    const s = document.createElement('div');
+    s.className = blanks.has(i) ? 'puzzle-slot blank' : 'puzzle-slot';
+    s.id = `ps${i}`;
+    s.textContent = blanks.has(i) ? '' : word[i];
+    slotsEl.appendChild(s);
+  }
+
+  // Correct tiles + distractors
+  const correctLetters = st.blanks.map(i => word[i]);
+  const alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const distractors = alpha.filter(l => !correctLetters.includes(l)).sort(() => Math.random()-0.5).slice(0, 3);
+  const tiles = [...correctLetters, ...distractors].sort(() => Math.random()-0.5);
+
+  const tilesEl = document.getElementById('tileBtns');
+  tilesEl.innerHTML = '';
+  tiles.forEach((letter, idx) => {
+    const btn = document.createElement('button');
+    btn.className   = 'tile-btn';
+    btn.id          = `tb${idx}`;
+    btn.textContent = letter;
+    btn.addEventListener('click', () => {
+      if (st.locked || !st.blankQueue.length) return;
+      const targetPos = st.blankQueue[0];
+      const expected  = word[targetPos];
+      if (letter === expected) {
+        st.blankQueue.shift();
+        const slot = document.getElementById(`ps${targetPos}`);
+        slot.textContent = letter;
+        slot.className   = 'puzzle-slot correct';
+        btn.classList.add('used');
+        document.getElementById('resultMsg').textContent = '';
+        if (!st.blankQueue.length) {
+          st.locked = true;
+          document.getElementById('resultMsg').textContent = '🧩 Puzzle solved!';
+          onCorrect();
+        }
+      } else {
+        const slot = document.getElementById(`ps${targetPos}`);
+        slot.classList.add('shake');
+        setTimeout(() => slot.classList.remove('shake'), 440);
+        document.getElementById('resultMsg').textContent = 'That tile doesn\'t fit here!';
+        btn.disabled = true;
+        setTimeout(() => { btn.disabled = false; }, 800);
+      }
+    });
+    tilesEl.appendChild(btn);
+  });
+}
+
+// ── FINISH THE SENTENCE ───────────────────────────────────
+function startSentence() {
+  st.locked = false;
+  let idx;
+  do { idx = Math.floor(Math.random() * SENTENCES.length); } while (idx === st.sentIdx && SENTENCES.length > 1);
+  st.sentIdx = idx;
+  const q = SENTENCES[idx];
+  hideAll();
+  document.getElementById('bigEmoji').style.display       = 'none';
+  document.getElementById('sentenceDisplay').style.display = 'block';
+  document.getElementById('pictureOptions').style.display  = 'flex';
+  document.getElementById('modeLabel').textContent         = 'FINISH THE SENTENCE';
+  document.getElementById('modeSub').textContent           = 'Finish the Sentence';
+  document.getElementById('resultMsg').textContent         = '';
+
+  const filled = q.s.replace('___', `<span class="sentence-blank">___</span>`);
+  document.getElementById('sentenceDisplay').innerHTML = filled;
+
+  const opts = [q.a, ...q.d].sort(() => Math.random()-0.5);
+  const el   = document.getElementById('pictureOptions');
+  el.innerHTML = '';
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'picture-opt';
+    btn.innerHTML = `<span class="opt-emoji">${opt.e}</span><span class="opt-word">${opt.w}</span>`;
+    btn.addEventListener('click', () => {
+      if (st.locked) return;
+      if (opt.w === q.a.w) {
+        st.locked = true;
+        btn.classList.add('correct-flash');
+        el.querySelectorAll('button').forEach(b => b.disabled = true);
+        const filled2 = q.s.replace('___', `<span class="sentence-blank">${opt.e} ${opt.w}</span>`);
+        document.getElementById('sentenceDisplay').innerHTML = filled2;
+        document.getElementById('resultMsg').textContent = '🧩 That\'s right!';
+        onCorrect();
+      } else {
+        btn.classList.add('wrong-flash');
+        setTimeout(() => btn.classList.remove('wrong-flash'), 500);
+        btn.disabled = true;
+        document.getElementById('resultMsg').textContent = 'Not quite — try another!';
+      }
+    });
+    el.appendChild(btn);
+  });
+}
+
+// ── RHYME TIME ────────────────────────────────────────────
+function startRhyme() {
+  st.locked = false;
+  let idx;
+  do { idx = Math.floor(Math.random() * RHYMES.length); } while (idx === st.rhymeIdx && RHYMES.length > 1);
+  st.rhymeIdx = idx;
+  const q = RHYMES[idx];
+  hideAll();
+  document.getElementById('rhymePrompt').style.display   = 'flex';
+  document.getElementById('pictureOptions').style.display = 'flex';
+  document.getElementById('modeLabel').textContent        = 'RHYME TIME';
+  document.getElementById('modeSub').textContent          = 'Rhyme Time';
+  document.getElementById('resultMsg').textContent        = '';
+
+  document.getElementById('rhymePrompt').innerHTML =
+    `<div class="rhyme-word">${q.p.e} ${q.p.w}</div>
+     <div class="rhyme-sub">Which word rhymes with <strong>${q.p.w}</strong>?</div>`;
+
+  const opts = [q.a, ...q.d].sort(() => Math.random()-0.5);
+  const el   = document.getElementById('pictureOptions');
+  el.innerHTML = '';
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'picture-opt';
+    btn.innerHTML = `<span class="opt-emoji">${opt.e}</span><span class="opt-word">${opt.w}</span>`;
+    btn.addEventListener('click', () => {
+      if (st.locked) return;
+      if (opt.w === q.a.w) {
+        st.locked = true;
+        btn.classList.add('correct-flash');
+        el.querySelectorAll('button').forEach(b => b.disabled = true);
+        document.getElementById('resultMsg').textContent = `🎵 Yes! ${q.p.w} and ${q.a.w} rhyme!`;
+        onCorrect();
+      } else {
+        btn.classList.add('wrong-flash');
+        setTimeout(() => btn.classList.remove('wrong-flash'), 500);
+        btn.disabled = true;
+        document.getElementById('resultMsg').textContent = 'Try another!';
+      }
+    });
+    el.appendChild(btn);
+  });
+}
+
+// ── REWARD ────────────────────────────────────────────────
+function onCorrect() {
+  st.solved++;
+  st.streak++;
+  st.badgeProgress++;
+  renderStars(st.badgeProgress);
+  launchConfetti(st.grownup);
+  const em = document.getElementById('bigEmoji');
+  if (em.style.display !== 'none') { em.classList.add('bounce'); setTimeout(() => em.classList.remove('bounce'), 550); }
+  if (st.badgeProgress >= 5) {
+    st.badgeProgress = 0;
+    showToast('⭐ Puzzle Master badge earned!');
+  }
+  save();
+  setTimeout(() => { document.getElementById('resultMsg').textContent = ''; startRound(); }, 1200);
+}
+
+function startRound() {
+  if      (st.mode === 'tiledrop') startTileDrop();
+  else if (st.mode === 'sentence') startSentence();
+  else                             startRhyme();
+}
+
+// ── ADMIN ─────────────────────────────────────────────────
+function syncAdminUI() {
+  document.querySelectorAll('.mode-opt').forEach(b => b.classList.toggle('active', b.dataset.mode === st.mode));
+  document.getElementById('statSolved').textContent = st.solved;
+  document.getElementById('statStreak').textContent = st.streak;
+  syncGrownupBtn(st.grownup);
+}
+
+document.getElementById('adminBtn').addEventListener('click', () => openGate(() => {
+  syncAdminUI();
+  document.getElementById('adminOverlay').classList.add('show');
+}));
+document.getElementById('closeAdminBtn').addEventListener('click', () => {
+  document.getElementById('adminOverlay').classList.remove('show');
+  startRound();
+});
+document.getElementById('adminOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('adminOverlay')) { document.getElementById('adminOverlay').classList.remove('show'); startRound(); }
+});
+document.getElementById('grownupToggleBtn').addEventListener('click', () => { st.grownup = !st.grownup; syncGrownupBtn(st.grownup); });
+document.querySelectorAll('.mode-opt').forEach(b => b.addEventListener('click', () => { st.mode = b.dataset.mode; syncAdminUI(); }));
+document.getElementById('skipBtn').addEventListener('click', () => { st.locked = false; startRound(); });
+
+// ── BOOT ──────────────────────────────────────────────────
+syncGrownupBtn(st.grownup);
+renderStars(st.badgeProgress);
+startRound();
+</script>
+</body>
+</html>

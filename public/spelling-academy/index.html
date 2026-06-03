@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Superhero Spelling Academy</title>
+<link rel="stylesheet" href="../_shared/lab.css">
+<style>
+.game-area {
+  width: 100%; max-width: 520px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 22px; padding: 0 0 40px;
+}
+
+/* Progress stars */
+.star-bar { display: flex; gap: 10px; justify-content: center; }
+.star { font-size: 2rem; filter: grayscale(1) opacity(0.3); transition: filter 0.3s, transform 0.3s; }
+.star.lit { filter: none; transform: scale(1.15); }
+@keyframes starPop { 0%{transform:scale(1)} 50%{transform:scale(1.7)} 100%{transform:scale(1.15)} }
+.star.pop { animation: starPop 0.4s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+/* Emoji */
+.word-emoji {
+  font-size: 6rem; line-height: 1; text-align: center;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.12));
+}
+@keyframes emojiBounce { 0%{transform:scale(1)} 40%{transform:scale(1.22)} 100%{transform:scale(1)} }
+.word-emoji.bounce { animation: emojiBounce 0.5s cubic-bezier(.34,1.56,.64,1); }
+
+/* Mode label */
+.mode-label {
+  font-family: var(--font-mono); font-size: 0.65rem; font-weight: 700;
+  padding: 3px 10px; border-radius: 4px; letter-spacing: 1.5px; text-transform: uppercase;
+  background: var(--viridian-bg); color: var(--viridian); border: 1.5px solid var(--viridian);
+}
+.mode-label.villain { background: rgba(185,28,28,0.1); color: #b91c1c; border-color: #b91c1c; }
+
+/* Letter slots */
+.word-slots { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.letter-slot {
+  width: 58px; height: 66px; border-radius: var(--radius);
+  border: 2px solid var(--border2); background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 2rem; font-weight: 700;
+  color: var(--text); text-transform: uppercase;
+  transition: all 0.18s;
+}
+.letter-slot.blank {
+  border: 3px dashed var(--viridian); background: var(--viridian-bg); color: var(--viridian);
+}
+.letter-slot.filled-pending {
+  border: 2px solid var(--viridian); background: var(--viridian-bg); color: var(--viridian);
+}
+.letter-slot.correct {
+  background: var(--correct); border: 2px solid var(--correct-b); color: var(--correct-txt);
+}
+.letter-slot.shake { animation: shake 0.42s ease; }
+
+/* Choice / scramble buttons */
+.choices { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.choice-btn {
+  width: 70px; height: 70px; border-radius: var(--radius-lg);
+  border: 3px solid var(--border2); background: var(--surface);
+  font-family: var(--font-mono); font-size: 2.1rem; font-weight: 700;
+  color: var(--text); cursor: pointer; text-transform: uppercase;
+  box-shadow: 0 4px 0 var(--border2);
+  transition: all 0.1s; display: flex; align-items: center; justify-content: center;
+  user-select: none;
+}
+.choice-btn:hover:not(:disabled) { background: var(--viridian-bg); border-color: var(--viridian); color: var(--viridian); box-shadow: 0 4px 0 var(--viridian); }
+.choice-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+.choice-btn:disabled { opacity: 0.3; pointer-events: none; }
+.choice-btn.used { opacity: 0; pointer-events: none; transition: opacity 0.15s; }
+
+/* Feedback */
+.result-msg {
+  font-family: var(--font-mono); font-size: 1rem; font-weight: 700;
+  color: var(--viridian); letter-spacing: 0.5px; min-height: 1.5em; text-align: center;
+}
+
+/* Badge overlay */
+.badge-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.72);
+  z-index: 50; align-items: center; justify-content: center; backdrop-filter: blur(8px);
+}
+.badge-overlay.show { display: flex; }
+.badge-card {
+  background: var(--surface); border: 4px solid var(--viridian);
+  border-radius: 20px; padding: 40px 44px; text-align: center;
+  max-width: 360px; width: 92%;
+  box-shadow: 0 0 0 8px var(--viridian-bg), 0 24px 80px rgba(0,0,0,0.4);
+  animation: modalPop 0.4s cubic-bezier(.34,1.56,.64,1);
+}
+.badge-shield { font-size: 5rem; margin-bottom: 8px; }
+.badge-title { font-family: var(--font-mono); font-size: 1.35rem; font-weight: 700; color: var(--viridian); letter-spacing: 2px; margin-bottom: 6px; }
+.badge-sub { font-size: 0.9rem; color: var(--text2); margin-bottom: 24px; line-height: 1.5; }
+.badge-btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* Admin mode opts */
+.mode-opts { display: flex; gap: 8px; }
+.mode-opt {
+  flex: 1; padding: 9px 8px; border-radius: 5px; border: 1px solid #1a2e25;
+  font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+  cursor: pointer; letter-spacing: 0.5px; text-transform: uppercase;
+  background: rgba(255,255,255,0.05); color: #52a88e; transition: all 0.14s; text-align: center;
+}
+.mode-opt.active { background: #40826D; color: #fff; border-color: #40826D; }
+
+.len-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.len-opt {
+  flex: 1; padding: 8px 4px; border-radius: 5px; border: 1px solid #1a2e25;
+  font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+  cursor: pointer; text-transform: uppercase; text-align: center;
+  background: rgba(255,255,255,0.05); color: #52a88e; transition: all 0.14s;
+}
+.len-opt.active { background: #40826D; color: #fff; border-color: #40826D; }
+
+@media print {
+  body > *:not(.badge-overlay) { display: none !important; }
+  .badge-overlay { display: flex !important; position: static; background: none; backdrop-filter: none; }
+  .badge-btn-row { display: none !important; }
+}
+@media (max-width: 400px) {
+  .letter-slot { width: 48px; height: 56px; font-size: 1.6rem; }
+  .choice-btn { width: 58px; height: 58px; font-size: 1.7rem; }
+  .word-emoji { font-size: 4.5rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- GATE -->
+<div class="admin-overlay" id="gateOverlay">
+  <div class="admin-modal" style="max-width:320px;text-align:center;">
+    <h2 style="margin-bottom:18px;">// Grownup Check</h2>
+    <p style="font-family:var(--font-mono);font-size:0.78rem;color:#52a88e;margin-bottom:20px;">2 × 5 = ?</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:14px;" id="gateButtons"></div>
+    <p id="gateError" style="font-family:var(--font-mono);font-size:0.72rem;color:#ef4444;min-height:1.2em;"></p>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-modal">
+    <h2>// Grownup Mode</h2>
+    <p class="admin-sub">Spelling Academy settings</p>
+
+    <div class="admin-section">
+      <h3>Activity</h3>
+      <div class="mode-opts">
+        <button class="mode-opt active" data-mode="fix">Fix the Word</button>
+        <button class="mode-opt" data-mode="mixup">Villain Mix-Up</button>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h3>Word Length</h3>
+      <div class="len-opts">
+        <button class="len-opt" data-len="3">3</button>
+        <button class="len-opt" data-len="4">4</button>
+        <button class="len-opt" data-len="5">5</button>
+        <button class="len-opt active" data-len="0">All</button>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h3>Stats</h3>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-num" id="statWords">0</div><div class="stat-lbl">Words</div></div>
+        <div class="stat-card"><div class="stat-num" id="statBadges">0</div><div class="stat-lbl">Badges</div></div>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h3>Display</h3>
+      <button class="abtn" id="grownupToggleBtn" style="width:100%;text-align:left;display:flex;align-items:center;gap:8px;">
+        <span id="grownupDot" style="width:10px;height:10px;border-radius:50%;background:#3d6050;display:inline-block;flex-shrink:0;"></span>
+        <span id="grownupLabel">Dark mode: OFF</span>
+      </button>
+    </div>
+
+    <div style="text-align:center;margin-top:6px;">
+      <button class="abtn ghost" id="closeAdminBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- BADGE -->
+<div class="badge-overlay" id="badgeOverlay">
+  <div class="badge-card">
+    <div class="badge-shield">🦸</div>
+    <div class="badge-title">SPELLING HERO!</div>
+    <div class="badge-sub">Amazing work! You saved 5 words<br>from the villain!</div>
+    <div class="badge-btn-row">
+      <button class="btn-primary" id="printBadgeBtn">🖨 Print Badge</button>
+      <button class="btn-primary" id="keepPlayingBtn" style="background:var(--text2);">Keep Playing</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="gameView" class="view active" style="padding:0 16px 20px;">
+  <header>
+    <div class="logo-wrap">
+      <div class="logo">⚡ Spelling<span>Academy</span></div>
+      <div class="logo-sub" id="modeSub">Fix the Broken Word</div>
+    </div>
+    <div class="header-controls">
+      <button class="btn-next" id="skipBtn">SKIP →</button>
+      <a class="btn-icon" href="../" title="Game Centre" style="font-size:0.9rem;text-decoration:none;">🏠</a>
+      <button class="gear-btn" id="adminBtn"><span class="dot"></span>⚙</button>
+    </div>
+  </header>
+
+  <div class="game-area">
+    <div class="star-bar">
+      <span class="star" id="star0">⭐</span>
+      <span class="star" id="star1">⭐</span>
+      <span class="star" id="star2">⭐</span>
+      <span class="star" id="star3">⭐</span>
+      <span class="star" id="star4">⭐</span>
+    </div>
+
+    <div class="word-emoji" id="wordEmoji">🐱</div>
+    <div class="mode-label" id="modeLabel">FIX THE WORD</div>
+    <div class="word-slots" id="wordSlots"></div>
+    <div class="result-msg" id="resultMsg"></div>
+    <div class="choices" id="choices"></div>
+  </div>
+
+  <footer>Made with 🩵 for L&amp;G</footer>
+</div>
+
+<script src="../_shared/lab.js"></script>
+<script>
+const WORDS = [
+  {w:'CAT',e:'🐱'},{w:'DOG',e:'🐶'},{w:'HEN',e:'🐔'},{w:'PIG',e:'🐷'},
+  {w:'BEE',e:'🐝'},{w:'FOX',e:'🦊'},{w:'OWL',e:'🦉'},{w:'COW',e:'🐮'},
+  {w:'ANT',e:'🐜'},{w:'BUG',e:'🐛'},{w:'SUN',e:'☀️'},{w:'HAT',e:'🎩'},
+  {w:'CUP',e:'☕'},{w:'BAG',e:'👜'},{w:'BUS',e:'🚌'},{w:'CAR',e:'🚗'},
+  {w:'NET',e:'🥅'},{w:'POT',e:'🪴'},{w:'BOX',e:'📦'},{w:'MAP',e:'🗺️'},
+  {w:'BEAR',e:'🐻'},{w:'BIRD',e:'🐦'},{w:'CRAB',e:'🦀'},{w:'DUCK',e:'🦆'},
+  {w:'FISH',e:'🐟'},{w:'FROG',e:'🐸'},{w:'LAMB',e:'🐑'},{w:'LION',e:'🦁'},
+  {w:'WOLF',e:'🐺'},{w:'WORM',e:'🪱'},{w:'BOOK',e:'📚'},{w:'CAKE',e:'🎂'},
+  {w:'STAR',e:'⭐'},{w:'MOON',e:'🌙'},{w:'RAIN',e:'🌧️'},{w:'SNOW',e:'❄️'},
+  {w:'TIGER',e:'🐯'},{w:'HORSE',e:'🐴'},{w:'SHARK',e:'🦈'},{w:'WHALE',e:'🐋'},
+  {w:'SNAKE',e:'🐍'},{w:'EAGLE',e:'🦅'},{w:'PANDA',e:'🐼'},{w:'KOALA',e:'🐨'},
+  {w:'OTTER',e:'🦦'},{w:'LLAMA',e:'🦙'},{w:'APPLE',e:'🍎'},{w:'GRAPE',e:'🍇'},
+  {w:'LEMON',e:'🍋'},{w:'PIZZA',e:'🍕'},{w:'TRAIN',e:'🚂'},{w:'PLANT',e:'🌿'},
+];
+
+const st = {
+  mode: 'fix', wordLen: 0, grownup: false,
+  wordsCorrect: 0, badgeCount: 0, badgeProgress: 0,
+  current: null, blankIdx: 0, scrambled: [], tapInput: [], locked: false,
+};
+
+try {
+  const s = JSON.parse(localStorage.getItem('sa_v1') || '{}');
+  if (s.mode) st.mode = s.mode;
+  if (s.wordLen !== undefined) st.wordLen = s.wordLen;
+  if (s.grownup) st.grownup = s.grownup;
+  if (s.wordsCorrect) st.wordsCorrect = s.wordsCorrect;
+  if (s.badgeCount) st.badgeCount = s.badgeCount;
+} catch(e) {}
+
+function save() {
+  try { localStorage.setItem('sa_v1', JSON.stringify({mode:st.mode,wordLen:st.wordLen,grownup:st.grownup,wordsCorrect:st.wordsCorrect,badgeCount:st.badgeCount})); } catch(e) {}
+}
+
+function pool() {
+  return st.wordLen === 0 ? WORDS : WORDS.filter(x => x.w.length === st.wordLen);
+}
+
+function pick() {
+  const p = pool().length ? pool() : WORDS;
+  let w;
+  do { w = p[Math.floor(Math.random() * p.length)]; }
+  while (p.length > 1 && st.current && w.w === st.current.w);
+  return w;
+}
+
+// ── FIX THE WORD ──────────────────────────────────────────
+function startFix() {
+  st.locked = false;
+  st.current = pick();
+  const word = st.current.w;
+
+  const vowels = [...word].map((l,i) => 'AEIOU'.includes(l) ? i : -1).filter(i => i >= 0);
+  const all    = [...word].map((_,i) => i);
+  const cands  = vowels.length ? vowels : all;
+  st.blankIdx  = cands[Math.floor(Math.random() * cands.length)];
+
+  document.getElementById('wordEmoji').textContent = st.current.e;
+  document.getElementById('modeLabel').textContent  = 'FIX THE WORD';
+  document.getElementById('modeLabel').className    = 'mode-label';
+  document.getElementById('modeSub').textContent    = 'Fix the Broken Word';
+  document.getElementById('resultMsg').textContent  = '';
+
+  const slotsEl = document.getElementById('wordSlots');
+  slotsEl.innerHTML = '';
+  for (let i = 0; i < word.length; i++) {
+    const s = document.createElement('div');
+    s.id = `sl${i}`;
+    s.className = 'letter-slot' + (i === st.blankIdx ? ' blank' : '');
+    s.textContent = i === st.blankIdx ? '_' : word[i];
+    slotsEl.appendChild(s);
+  }
+
+  const correct = word[st.blankIdx];
+  const alpha   = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(l => l !== correct);
+  const opts    = [correct, ...alpha.sort(() => Math.random()-0.5).slice(0,3)].sort(() => Math.random()-0.5);
+
+  const choicesEl = document.getElementById('choices');
+  choicesEl.innerHTML = '';
+  opts.forEach(letter => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = letter;
+    btn.addEventListener('click', () => {
+      if (st.locked) return;
+      if (letter === correct) {
+        st.locked = true;
+        const slot = document.getElementById(`sl${st.blankIdx}`);
+        slot.textContent = letter;
+        slot.className = 'letter-slot correct';
+        document.getElementById('resultMsg').textContent = '⚡ Hero! Word saved!';
+        choicesEl.querySelectorAll('button').forEach(b => b.disabled = true);
+        onCorrect();
+      } else {
+        document.getElementById(`sl${st.blankIdx}`).classList.add('shake');
+        setTimeout(() => document.getElementById(`sl${st.blankIdx}`).classList.remove('shake'), 440);
+        document.getElementById('resultMsg').textContent = 'Not quite — try again!';
+        btn.disabled = true;
+      }
+    });
+    choicesEl.appendChild(btn);
+  });
+}
+
+// ── VILLAIN MIX-UP ────────────────────────────────────────
+function startMixUp() {
+  st.locked  = false;
+  st.tapInput = [];
+  st.current  = pick();
+  const word  = st.current.w;
+
+  let scrambled;
+  do { scrambled = [...word].sort(() => Math.random()-0.5); }
+  while (scrambled.join('') === word && word.length > 1);
+  st.scrambled = scrambled;
+
+  document.getElementById('wordEmoji').textContent = st.current.e;
+  document.getElementById('modeLabel').textContent  = 'VILLAIN MIX-UP!';
+  document.getElementById('modeLabel').className    = 'mode-label villain';
+  document.getElementById('modeSub').textContent    = 'Unscramble the word';
+  document.getElementById('resultMsg').textContent  = 'Tap the letters in order!';
+
+  const slotsEl = document.getElementById('wordSlots');
+  slotsEl.innerHTML = '';
+  for (let i = 0; i < word.length; i++) {
+    const s = document.createElement('div');
+    s.id = `sl${i}`;
+    s.className = 'letter-slot blank';
+    slotsEl.appendChild(s);
+  }
+
+  const choicesEl = document.getElementById('choices');
+  choicesEl.innerHTML = '';
+  scrambled.forEach((letter, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.id = `sc${idx}`;
+    btn.textContent = letter;
+    btn.addEventListener('click', () => {
+      if (st.locked || btn.classList.contains('used')) return;
+      const pos      = st.tapInput.length;
+      const expected = word[pos];
+      if (letter === expected) {
+        st.tapInput.push(letter);
+        document.getElementById(`sl${pos}`).textContent  = letter;
+        document.getElementById(`sl${pos}`).className    = 'letter-slot filled-pending';
+        btn.classList.add('used');
+        document.getElementById('resultMsg').textContent = '';
+        if (st.tapInput.length === word.length) {
+          st.locked = true;
+          document.querySelectorAll('.letter-slot').forEach(s => s.className = 'letter-slot correct');
+          document.getElementById('resultMsg').textContent = '⚡ Hero! Unscrambled!';
+          onCorrect();
+        }
+      } else {
+        document.getElementById('resultMsg').textContent = 'Oops! Start from the beginning!';
+        document.querySelectorAll('.letter-slot').forEach(s => { s.classList.add('shake'); setTimeout(() => { s.classList.remove('shake'); s.textContent = ''; s.className = 'letter-slot blank'; }, 440); });
+        document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('used'));
+        st.tapInput = [];
+      }
+    });
+    choicesEl.appendChild(btn);
+  });
+}
+
+// ── REWARD ────────────────────────────────────────────────
+function onCorrect() {
+  st.wordsCorrect++;
+  st.badgeProgress++;
+  renderStars(st.badgeProgress);
+  launchConfetti(st.grownup);
+  const em = document.getElementById('wordEmoji');
+  em.classList.add('bounce');
+  setTimeout(() => em.classList.remove('bounce'), 550);
+
+  if (st.badgeProgress >= 5) {
+    st.badgeProgress = 0;
+    st.badgeCount++;
+    save();
+    setTimeout(() => document.getElementById('badgeOverlay').classList.add('show'), 900);
+  } else {
+    save();
+    setTimeout(() => { document.getElementById('resultMsg').textContent = ''; startRound(); }, 1100);
+  }
+}
+
+function startRound() {
+  if (st.mode === 'fix') startFix();
+  else startMixUp();
+}
+
+// ── ADMIN ─────────────────────────────────────────────────
+function syncAdminUI() {
+  document.querySelectorAll('.mode-opt').forEach(b => b.classList.toggle('active', b.dataset.mode === st.mode));
+  document.querySelectorAll('.len-opt').forEach(b => b.classList.toggle('active', parseInt(b.dataset.len) === st.wordLen));
+  document.getElementById('statWords').textContent  = st.wordsCorrect;
+  document.getElementById('statBadges').textContent = st.badgeCount;
+  syncGrownupBtn(st.grownup);
+}
+
+document.getElementById('adminBtn').addEventListener('click', () => openGate(() => {
+  syncAdminUI();
+  document.getElementById('adminOverlay').classList.add('show');
+}));
+document.getElementById('closeAdminBtn').addEventListener('click', () => {
+  document.getElementById('adminOverlay').classList.remove('show');
+  startRound();
+});
+document.getElementById('adminOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('adminOverlay')) { document.getElementById('adminOverlay').classList.remove('show'); startRound(); }
+});
+document.getElementById('grownupToggleBtn').addEventListener('click', () => { st.grownup = !st.grownup; syncGrownupBtn(st.grownup); });
+document.querySelectorAll('.mode-opt').forEach(b => b.addEventListener('click', () => { st.mode = b.dataset.mode; syncAdminUI(); }));
+document.querySelectorAll('.len-opt').forEach(b => b.addEventListener('click', () => { st.wordLen = parseInt(b.dataset.len); syncAdminUI(); }));
+document.getElementById('skipBtn').addEventListener('click', () => { st.locked = false; startRound(); });
+document.getElementById('printBadgeBtn').addEventListener('click', () => window.print());
+document.getElementById('keepPlayingBtn').addEventListener('click', () => { document.getElementById('badgeOverlay').classList.remove('show'); startRound(); });
+
+// ── BOOT ──────────────────────────────────────────────────
+syncGrownupBtn(st.grownup);
+renderStars(st.badgeProgress);
+startRound();
+</script>
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Safari</title>
+<link rel="stylesheet" href="../_shared/lab.css">
+<style>
+.game-area {
+  width: 100%; max-width: 520px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 24px; padding: 0 0 40px;
+}
+
+/* Progress stars */
+.star-bar { display: flex; gap: 10px; justify-content: center; }
+.star { font-size: 2rem; filter: grayscale(1) opacity(0.3); transition: filter 0.3s, transform 0.3s; }
+.star.lit { filter: none; transform: scale(1.15); }
+@keyframes starPop { 0%{transform:scale(1)} 50%{transform:scale(1.7)} 100%{transform:scale(1.15)} }
+.star.pop { animation: starPop 0.4s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+/* Emoji display */
+.animal-emoji {
+  font-size: 7rem; line-height: 1; text-align: center;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.13));
+}
+@keyframes emojiBounce { 0%{transform:scale(1)} 40%{transform:scale(1.22)} 100%{transform:scale(1)} }
+.animal-emoji.bounce { animation: emojiBounce 0.5s cubic-bezier(.34,1.56,.64,1); }
+
+/* Question prompt */
+.question-prompt {
+  font-family: var(--font-mono); font-size: 1rem; font-weight: 700;
+  color: var(--text2); letter-spacing: 0.5px; text-align: center;
+  min-height: 1.5em;
+}
+
+/* Word option cards (Match mode) */
+.word-options { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.word-opt-btn {
+  min-width: 110px; padding: 14px 18px; border-radius: var(--radius-lg);
+  border: 3px solid var(--border2); background: var(--surface);
+  font-family: var(--font-mono); font-size: 1.35rem; font-weight: 700;
+  color: var(--text); cursor: pointer; text-align: center; text-transform: uppercase;
+  box-shadow: 0 4px 0 var(--border2); letter-spacing: 2px;
+  transition: all 0.1s; user-select: none;
+}
+.word-opt-btn:hover:not(:disabled) { background: var(--viridian-bg); border-color: var(--viridian); color: var(--viridian); box-shadow: 0 4px 0 var(--viridian); }
+.word-opt-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+.word-opt-btn:disabled { opacity: 0.35; pointer-events: none; }
+.word-opt-btn.correct-flash { background: var(--correct); border-color: var(--correct-b); color: var(--correct-txt); box-shadow: 0 4px 0 var(--correct-b); }
+.word-opt-btn.wrong-flash  { background: #fee2e2; border-color: #b91c1c; color: #b91c1c; animation: shake 0.42s ease; }
+
+/* Letter option buttons (First Letter + Spell mode) */
+.letter-options { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.letter-opt-btn {
+  width: 72px; height: 72px; border-radius: var(--radius-lg);
+  border: 3px solid var(--border2); background: var(--surface);
+  font-family: var(--font-mono); font-size: 2.2rem; font-weight: 700;
+  color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  text-transform: uppercase; box-shadow: 0 4px 0 var(--border2);
+  transition: all 0.1s; user-select: none;
+}
+.letter-opt-btn:hover:not(:disabled) { background: var(--viridian-bg); border-color: var(--viridian); color: var(--viridian); box-shadow: 0 4px 0 var(--viridian); }
+.letter-opt-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+.letter-opt-btn:disabled { opacity: 0.3; pointer-events: none; }
+.letter-opt-btn.used { opacity: 0; pointer-events: none; transition: opacity 0.15s; }
+
+/* Spell-it-out slots */
+.spell-slots { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.spell-slot {
+  width: 56px; height: 64px; border-radius: var(--radius);
+  border: 3px dashed var(--viridian); background: var(--viridian-bg);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 1.9rem; font-weight: 700;
+  color: var(--viridian); text-transform: uppercase; transition: all 0.18s;
+}
+.spell-slot.filled { border-style: solid; background: var(--surface); color: var(--text); }
+.spell-slot.correct { background: var(--correct); border-color: var(--correct-b); border-style: solid; color: var(--correct-txt); }
+.spell-slot.shake { animation: shake 0.42s ease; }
+
+/* Feedback */
+.result-msg {
+  font-family: var(--font-mono); font-size: 1rem; font-weight: 700;
+  color: var(--viridian); letter-spacing: 0.5px; min-height: 1.5em; text-align: center;
+}
+
+/* Mode label */
+.mode-label {
+  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
+  padding: 3px 10px; border-radius: 4px; letter-spacing: 1.5px; text-transform: uppercase;
+  background: rgba(212,160,23,0.12); color: #a87c0e; border: 1.5px solid #d4a017;
+}
+body.grownup .mode-label { color: #e6b830; border-color: #e6b830; }
+
+/* Admin */
+.mode-opts { display: flex; gap: 6px; flex-wrap: wrap; }
+.mode-opt {
+  flex: 1; min-width: 80px; padding: 9px 6px; border-radius: 5px; border: 1px solid #1a2e25;
+  font-family: var(--font-mono); font-size: 0.65rem; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.3px; text-transform: uppercase; text-align: center;
+  background: rgba(255,255,255,0.05); color: #52a88e; transition: all 0.14s;
+}
+.mode-opt.active { background: #40826D; color: #fff; border-color: #40826D; }
+
+@media (max-width: 400px) {
+  .animal-emoji { font-size: 5.5rem; }
+  .word-opt-btn { font-size: 1.1rem; min-width: 90px; }
+  .letter-opt-btn { width: 60px; height: 60px; font-size: 1.8rem; }
+  .spell-slot { width: 46px; height: 54px; font-size: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- GATE -->
+<div class="admin-overlay" id="gateOverlay">
+  <div class="admin-modal" style="max-width:320px;text-align:center;">
+    <h2 style="margin-bottom:18px;">// Grownup Check</h2>
+    <p style="font-family:var(--font-mono);font-size:0.78rem;color:#52a88e;margin-bottom:20px;">2 × 5 = ?</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:14px;" id="gateButtons"></div>
+    <p id="gateError" style="font-family:var(--font-mono);font-size:0.72rem;color:#ef4444;min-height:1.2em;"></p>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-modal">
+    <h2>// Grownup Mode</h2>
+    <p class="admin-sub">Word Safari settings</p>
+
+    <div class="admin-section">
+      <h3>Activity</h3>
+      <div class="mode-opts">
+        <button class="mode-opt active" data-mode="match">Match Animal</button>
+        <button class="mode-opt" data-mode="firstletter">First Letter</button>
+        <button class="mode-opt" data-mode="spell">Spell It Out</button>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h3>Stats</h3>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-num" id="statCorrect">0</div><div class="stat-lbl">Correct</div></div>
+        <div class="stat-card"><div class="stat-num" id="statStreak">0</div><div class="stat-lbl">Streak</div></div>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h3>Display</h3>
+      <button class="abtn" id="grownupToggleBtn" style="width:100%;text-align:left;display:flex;align-items:center;gap:8px;">
+        <span id="grownupDot" style="width:10px;height:10px;border-radius:50%;background:#3d6050;display:inline-block;flex-shrink:0;"></span>
+        <span id="grownupLabel">Dark mode: OFF</span>
+      </button>
+    </div>
+
+    <div style="text-align:center;margin-top:6px;">
+      <button class="abtn ghost" id="closeAdminBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="gameView" class="view active" style="padding:0 16px 20px;">
+  <header>
+    <div class="logo-wrap">
+      <div class="logo">🦁 Word<span>Safari</span></div>
+      <div class="logo-sub" id="modeSub">Match the Animal</div>
+    </div>
+    <div class="header-controls">
+      <button class="btn-next" id="skipBtn">SKIP →</button>
+      <a class="btn-icon" href="../" title="Game Centre" style="font-size:0.9rem;text-decoration:none;">🏠</a>
+      <button class="gear-btn" id="adminBtn"><span class="dot"></span>⚙</button>
+    </div>
+  </header>
+
+  <div class="game-area">
+    <div class="star-bar">
+      <span class="star" id="star0">⭐</span>
+      <span class="star" id="star1">⭐</span>
+      <span class="star" id="star2">⭐</span>
+      <span class="star" id="star3">⭐</span>
+      <span class="star" id="star4">⭐</span>
+    </div>
+
+    <div class="animal-emoji" id="animalEmoji">🦁</div>
+    <div class="mode-label" id="modeLabel">MATCH</div>
+    <div class="question-prompt" id="questionPrompt"></div>
+    <div class="spell-slots" id="spellSlots" style="display:none;"></div>
+    <div class="result-msg" id="resultMsg"></div>
+    <div class="word-options"   id="wordOptions"   style="display:none;"></div>
+    <div class="letter-options" id="letterOptions" style="display:none;"></div>
+  </div>
+
+  <footer>Made with 🩵 for L&amp;G</footer>
+</div>
+
+<script src="../_shared/lab.js"></script>
+<script>
+const ANIMALS = [
+  {w:'CAT',e:'🐱'},{w:'DOG',e:'🐶'},{w:'COW',e:'🐮'},{w:'PIG',e:'🐷'},
+  {w:'HEN',e:'🐔'},{w:'FOX',e:'🦊'},{w:'OWL',e:'🦉'},{w:'BEE',e:'🐝'},
+  {w:'ANT',e:'🐜'},{w:'DUCK',e:'🦆'},{w:'FROG',e:'🐸'},{w:'BEAR',e:'🐻'},
+  {w:'FISH',e:'🐟'},{w:'CRAB',e:'🦀'},{w:'LAMB',e:'🐑'},{w:'LION',e:'🦁'},
+  {w:'WOLF',e:'🐺'},{w:'BIRD',e:'🐦'},{w:'WORM',e:'🪱'},{w:'DEER',e:'🦌'},
+  {w:'TIGER',e:'🐯'},{w:'HORSE',e:'🐴'},{w:'SHARK',e:'🦈'},{w:'WHALE',e:'🐋'},
+  {w:'SNAKE',e:'🐍'},{w:'EAGLE',e:'🦅'},{w:'PANDA',e:'🐼'},{w:'KOALA',e:'🐨'},
+  {w:'OTTER',e:'🦦'},{w:'LLAMA',e:'🦙'},{w:'ZEBRA',e:'🦓'},{w:'RHINO',e:'🦏'},
+];
+
+const st = {
+  mode: 'match', grownup: false,
+  correct: 0, streak: 0, badgeProgress: 0,
+  current: null, tapInput: [], locked: false,
+};
+
+try {
+  const s = JSON.parse(localStorage.getItem('ws_v1') || '{}');
+  if (s.mode)    st.mode    = s.mode;
+  if (s.grownup) st.grownup = s.grownup;
+  if (s.correct) st.correct = s.correct;
+  if (s.streak)  st.streak  = s.streak;
+} catch(e) {}
+
+function save() {
+  try { localStorage.setItem('ws_v1', JSON.stringify({mode:st.mode,grownup:st.grownup,correct:st.correct,streak:st.streak})); } catch(e) {}
+}
+
+function pick(exclude) {
+  const pool = exclude ? ANIMALS.filter(a => a.w !== exclude) : ANIMALS;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function pickDistractors(correct, n) {
+  const others = ANIMALS.filter(a => a.w !== correct.w);
+  const shuffled = others.sort(() => Math.random()-0.5);
+  return shuffled.slice(0, n);
+}
+
+function hideAll() {
+  document.getElementById('wordOptions').style.display   = 'none';
+  document.getElementById('letterOptions').style.display = 'none';
+  document.getElementById('spellSlots').style.display    = 'none';
+}
+
+// ── MATCH THE ANIMAL ──────────────────────────────────────
+function startMatch() {
+  st.locked  = false;
+  st.current = pick(st.current?.w);
+  hideAll();
+  document.getElementById('wordOptions').style.display  = 'flex';
+  document.getElementById('animalEmoji').textContent    = st.current.e;
+  document.getElementById('modeLabel').textContent      = 'MATCH';
+  document.getElementById('modeSub').textContent        = 'Match the Animal';
+  document.getElementById('questionPrompt').textContent = 'Tap the right word!';
+  document.getElementById('resultMsg').textContent      = '';
+
+  const distractors = pickDistractors(st.current, 2);
+  const opts = [st.current, ...distractors].sort(() => Math.random()-0.5);
+  const el   = document.getElementById('wordOptions');
+  el.innerHTML = '';
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className   = 'word-opt-btn';
+    btn.textContent = opt.w;
+    btn.addEventListener('click', () => {
+      if (st.locked) return;
+      if (opt.w === st.current.w) {
+        st.locked = true;
+        btn.classList.add('correct-flash');
+        el.querySelectorAll('button').forEach(b => b.disabled = true);
+        document.getElementById('resultMsg').textContent = '🎉 Correct!';
+        onCorrect();
+      } else {
+        btn.classList.add('wrong-flash');
+        setTimeout(() => btn.classList.remove('wrong-flash'), 500);
+        btn.disabled = true;
+        document.getElementById('resultMsg').textContent = 'Try again!';
+      }
+    });
+    el.appendChild(btn);
+  });
+}
+
+// ── FIRST LETTER ──────────────────────────────────────────
+function startFirstLetter() {
+  st.locked  = false;
+  st.current = pick(st.current?.w);
+  hideAll();
+  document.getElementById('letterOptions').style.display = 'flex';
+  document.getElementById('animalEmoji').textContent     = st.current.e;
+  document.getElementById('modeLabel').textContent       = 'FIRST LETTER';
+  document.getElementById('modeSub').textContent         = 'First Letter';
+  document.getElementById('questionPrompt').textContent  = `What letter does ${st.current.w} start with?`;
+  document.getElementById('resultMsg').textContent       = '';
+
+  const correct     = st.current.w[0];
+  const alpha       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(l => l !== correct);
+  const distractors = alpha.sort(() => Math.random()-0.5).slice(0, 3);
+  const opts        = [correct, ...distractors].sort(() => Math.random()-0.5);
+  const el          = document.getElementById('letterOptions');
+  el.innerHTML = '';
+  opts.forEach(letter => {
+    const btn = document.createElement('button');
+    btn.className   = 'letter-opt-btn';
+    btn.textContent = letter;
+    btn.addEventListener('click', () => {
+      if (st.locked) return;
+      if (letter === correct) {
+        st.locked = true;
+        btn.style.background   = 'var(--correct)';
+        btn.style.borderColor  = 'var(--correct-b)';
+        btn.style.color        = 'var(--correct-txt)';
+        el.querySelectorAll('button').forEach(b => b.disabled = true);
+        document.getElementById('resultMsg').textContent = `🎉 Yes! ${st.current.w} starts with ${correct}!`;
+        onCorrect();
+      } else {
+        btn.disabled = true;
+        btn.style.opacity = '0.25';
+        document.getElementById('resultMsg').textContent = 'Not that one — try again!';
+      }
+    });
+    el.appendChild(btn);
+  });
+}
+
+// ── SPELL IT OUT ──────────────────────────────────────────
+function startSpell() {
+  st.locked   = false;
+  st.tapInput = [];
+  st.current  = pick(st.current?.w);
+  hideAll();
+  document.getElementById('spellSlots').style.display    = 'flex';
+  document.getElementById('letterOptions').style.display = 'flex';
+  document.getElementById('animalEmoji').textContent     = st.current.e;
+  document.getElementById('modeLabel').textContent       = 'SPELL IT';
+  document.getElementById('modeSub').textContent         = 'Spell It Out';
+  document.getElementById('questionPrompt').textContent  = 'Tap the letters in order!';
+  document.getElementById('resultMsg').textContent       = '';
+
+  const word    = st.current.w;
+  const slotsEl = document.getElementById('spellSlots');
+  slotsEl.innerHTML = '';
+  for (let i = 0; i < word.length; i++) {
+    const s = document.createElement('div');
+    s.className = 'spell-slot';
+    s.id = `ss${i}`;
+    slotsEl.appendChild(s);
+  }
+
+  // Shuffle the exact letters (no distractors — guided for younger kids)
+  const letters = [...word].map((l, i) => ({l, i})).sort(() => Math.random()-0.5);
+  const el = document.getElementById('letterOptions');
+  el.innerHTML = '';
+  letters.forEach(({l}, idx) => {
+    const btn = document.createElement('button');
+    btn.className   = 'letter-opt-btn';
+    btn.id          = `sp${idx}`;
+    btn.textContent = l;
+    btn.addEventListener('click', () => {
+      if (st.locked || btn.classList.contains('used')) return;
+      const pos      = st.tapInput.length;
+      const expected = word[pos];
+      if (l === expected) {
+        st.tapInput.push(l);
+        const slot = document.getElementById(`ss${pos}`);
+        slot.textContent = l;
+        slot.className = 'spell-slot filled';
+        btn.classList.add('used');
+        document.getElementById('resultMsg').textContent = '';
+        if (st.tapInput.length === word.length) {
+          st.locked = true;
+          document.querySelectorAll('.spell-slot').forEach(s => s.className = 'spell-slot correct');
+          document.getElementById('resultMsg').textContent = `🎉 You spelled ${word}!`;
+          onCorrect();
+        }
+      } else {
+        document.getElementById('resultMsg').textContent = 'Try a different letter!';
+        btn.style.animation = 'shake 0.42s ease';
+        setTimeout(() => btn.style.animation = '', 440);
+      }
+    });
+    el.appendChild(btn);
+  });
+}
+
+// ── REWARD ────────────────────────────────────────────────
+function onCorrect() {
+  st.correct++;
+  st.streak++;
+  st.badgeProgress++;
+  renderStars(st.badgeProgress);
+  launchConfetti(st.grownup);
+  const em = document.getElementById('animalEmoji');
+  em.classList.add('bounce');
+  setTimeout(() => em.classList.remove('bounce'), 550);
+  save();
+  if (st.badgeProgress >= 5) {
+    st.badgeProgress = 0;
+    showToast('⭐ Safari Star earned!');
+  }
+  setTimeout(() => { document.getElementById('resultMsg').textContent = ''; startRound(); }, 1200);
+}
+
+function startRound() {
+  if (st.mode === 'match')       startMatch();
+  else if (st.mode === 'firstletter') startFirstLetter();
+  else                           startSpell();
+}
+
+// ── ADMIN ─────────────────────────────────────────────────
+function syncAdminUI() {
+  document.querySelectorAll('.mode-opt').forEach(b => b.classList.toggle('active', b.dataset.mode === st.mode));
+  document.getElementById('statCorrect').textContent = st.correct;
+  document.getElementById('statStreak').textContent  = st.streak;
+  syncGrownupBtn(st.grownup);
+}
+
+document.getElementById('adminBtn').addEventListener('click', () => openGate(() => {
+  syncAdminUI();
+  document.getElementById('adminOverlay').classList.add('show');
+}));
+document.getElementById('closeAdminBtn').addEventListener('click', () => {
+  document.getElementById('adminOverlay').classList.remove('show');
+  startRound();
+});
+document.getElementById('adminOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('adminOverlay')) { document.getElementById('adminOverlay').classList.remove('show'); startRound(); }
+});
+document.getElementById('grownupToggleBtn').addEventListener('click', () => { st.grownup = !st.grownup; syncGrownupBtn(st.grownup); });
+document.querySelectorAll('.mode-opt').forEach(b => b.addEventListener('click', () => { st.mode = b.dataset.mode; syncAdminUI(); }));
+document.getElementById('skipBtn').addEventListener('click', () => { st.locked = false; startRound(); });
+
+// ── BOOT ──────────────────────────────────────────────────
+syncGrownupBtn(st.grownup);
+renderStars(st.badgeProgress);
+startRound();
+</script>
+</body>
+</html>
