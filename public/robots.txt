@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://letter-lab.p-ibrahim.workers.dev/sitemap.xml
