@@ -979,7 +979,7 @@ function renderGrid() {
   const len  = state.currentWord.length;
   const sz   = len === 4 ? 66 : 60;
   const done = state.guesses.length;
-  const total = Math.max(done + (state.gameOver ? 0 : 1) + 2, done + 3);
+  const total = done + (state.gameOver ? 0 : 1);
   grid.style.gridTemplateColumns = `repeat(${len}, ${sz}px)`;
   grid.innerHTML = '';
   for (let r = 0; r < total; r++) {
