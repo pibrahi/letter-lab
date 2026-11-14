@@ -1,0 +1,126 @@
+.game-area {
+  width: 100%; max-width: 520px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 22px; padding: 0 0 40px;
+}
+
+/* Progress stars */
+.star-bar { display: flex; gap: 10px; justify-content: center; }
+.star { font-size: 2rem; filter: grayscale(1) opacity(0.3); transition: filter 0.3s, transform 0.3s; }
+.star.lit { filter: none; transform: scale(1.15); }
+@keyframes starPop { 0%{transform:scale(1)} 50%{transform:scale(1.7)} 100%{transform:scale(1.15)} }
+.star.pop { animation: starPop 0.4s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+/* Emoji */
+.big-emoji {
+  font-size: 6.5rem; line-height: 1; text-align: center;
+  filter: drop-shadow(0 4px 14px rgba(0,0,0,0.12));
+}
+@keyframes emojiBounce { 0%{transform:scale(1)} 40%{transform:scale(1.22)} 100%{transform:scale(1)} }
+.big-emoji.bounce { animation: emojiBounce 0.5s cubic-bezier(.34,1.56,.64,1); }
+
+/* Mode label */
+.mode-label {
+  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
+  padding: 3px 10px; border-radius: 4px; letter-spacing: 1.5px; text-transform: uppercase;
+  background: rgba(107,130,120,0.14); color: var(--text2); border: 1.5px solid var(--border2);
+}
+
+/* Puzzle slots (Tile Drop) */
+.puzzle-slots { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.puzzle-slot {
+  width: 58px; height: 66px; border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 1.9rem; font-weight: 700;
+  text-transform: uppercase; transition: all 0.18s;
+  border: 2px solid var(--border2); background: var(--surface); color: var(--text);
+}
+.puzzle-slot.blank {
+  border: 3px dashed var(--viridian); background: var(--viridian-bg);
+  color: transparent;
+}
+.puzzle-slot.selected-target {
+  border: 3px solid var(--present); background: rgba(212,160,23,0.1);
+  animation: pulse 0.8s ease infinite;
+}
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(212,160,23,0.4)} 50%{box-shadow:0 0 0 6px rgba(212,160,23,0)} }
+.puzzle-slot.correct { background: var(--correct); border: 2px solid var(--correct-b); color: var(--correct-txt); }
+.puzzle-slot.shake { animation: shake 0.42s ease; }
+
+/* Tile buttons */
+.tile-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.tile-btn {
+  width: 62px; height: 70px; border-radius: var(--radius-lg);
+  border: 3px solid var(--viridian); background: var(--viridian-bg);
+  font-family: var(--font-mono); font-size: 2rem; font-weight: 700;
+  color: var(--viridian); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  text-transform: uppercase; box-shadow: 0 4px 0 var(--viridian-dk);
+  transition: all 0.1s; user-select: none;
+}
+.tile-btn:hover:not(:disabled) { background: var(--viridian); color: #fff; }
+.tile-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+.tile-btn.used { opacity: 0; pointer-events: none; transition: opacity 0.15s; }
+.tile-btn:disabled { opacity: 0.3; pointer-events: none; }
+
+/* Sentence mode */
+.sentence-display {
+  font-family: var(--font-mono); font-size: 1.35rem; font-weight: 700;
+  color: var(--text); text-align: center; line-height: 1.7; letter-spacing: 0.5px;
+  padding: 16px 20px; border: 2px solid var(--border); border-radius: var(--radius-lg);
+  background: var(--surface); width: 100%;
+}
+.sentence-blank {
+  display: inline-block; min-width: 80px; border-bottom: 3px solid var(--viridian);
+  color: var(--viridian); text-align: center;
+}
+
+.picture-options { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.picture-opt {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 14px 16px; border-radius: var(--radius-lg);
+  border: 3px solid var(--border2); background: var(--surface);
+  cursor: pointer; box-shadow: 0 4px 0 var(--border2);
+  transition: all 0.1s; user-select: none; min-width: 90px;
+}
+.picture-opt:hover:not(:disabled) { border-color: var(--viridian); background: var(--viridian-bg); box-shadow: 0 4px 0 var(--viridian); }
+.picture-opt:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+.picture-opt:disabled { opacity: 0.35; pointer-events: none; }
+.picture-opt.correct-flash { border-color: var(--correct-b); background: rgba(64,130,109,0.15); box-shadow: 0 4px 0 var(--correct-b); }
+.picture-opt.wrong-flash   { border-color: #b91c1c; background: #fee2e2; animation: shake 0.42s ease; }
+.opt-emoji { font-size: 2.8rem; line-height: 1; }
+.opt-word  { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; }
+
+/* Rhyme mode */
+.rhyme-prompt {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 16px 24px; border: 2px solid var(--border); border-radius: var(--radius-lg);
+  background: var(--surface); text-align: center;
+}
+.rhyme-word { font-family: var(--font-mono); font-size: 2rem; font-weight: 700; color: var(--text); letter-spacing: 3px; }
+.rhyme-sub  { font-size: 0.82rem; color: var(--text3); font-family: var(--font-mono); }
+
+/* Feedback */
+.result-msg {
+  font-family: var(--font-mono); font-size: 1rem; font-weight: 700;
+  color: var(--viridian); letter-spacing: 0.5px; min-height: 1.5em; text-align: center;
+}
+
+/* Admin */
+.mode-opts { display: flex; gap: 6px; flex-wrap: wrap; }
+.mode-opt {
+  flex: 1; min-width: 80px; padding: 9px 6px; border-radius: 5px; border: 1px solid #1a2e25;
+  font-family: var(--font-mono); font-size: 0.65rem; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.3px; text-transform: uppercase; text-align: center;
+  background: rgba(255,255,255,0.05); color: #52a88e; transition: all 0.14s;
+}
+.mode-opt.active { background: #40826D; color: #fff; border-color: #40826D; }
+
+@media (max-width: 400px) {
+  .big-emoji { font-size: 5rem; }
+  .puzzle-slot { width: 46px; height: 54px; font-size: 1.5rem; }
+  .tile-btn { width: 52px; height: 60px; font-size: 1.7rem; }
+  .opt-emoji { font-size: 2.2rem; }
+}
+
+/* Wins over component display rules until script sets style.display. */
+.is-hidden { display: none; }

@@ -197,3 +197,47 @@ footer {
 @media (max-width: 400px) {
   .logo { font-size: 1.2rem; }
 }
+
+/* Replaces style attributes that were identical across activities. */
+.view-pad { padding: 0 16px 20px; }
+.home-link { font-size: 0.9rem; text-decoration: none; }
+.is-hidden { display: none; }
+.gate-modal { max-width: 320px; text-align: center; }
+.gate-heading { margin-bottom: 18px; }
+.gate-question {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: #52a88e;
+  margin-bottom: 20px;
+}
+.gate-choices {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.gate-error {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: #ef4444;
+  min-height: 1.2em;
+}
+.toggle-row {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #3d6050;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.overlay-close { text-align: center; margin-top: 6px; }
+.footer-home { color: var(--viridian); text-decoration: none; }
+.keep-playing { background: var(--text2); }
