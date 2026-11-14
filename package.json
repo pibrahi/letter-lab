@@ -1,0 +1,12 @@
+{
+  "name": "letter-lab",
+  "private": true,
+  "description": "Word learning activities for kids, served as static assets on a Cloudflare Worker.",
+  "scripts": {
+    "test": "node --test test/site.test.js",
+    "preview": "wrangler versions upload"
+  },
+  "devDependencies": {
+    "wrangler": "4.162.0"
+  }
+}
