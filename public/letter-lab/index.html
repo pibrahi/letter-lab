@@ -265,12 +265,15 @@ body.grownup .hint-bar { color: var(--viridian-lt); }
 .af select option { background:#0a100d; }
 .abtn { padding:8px 16px; border-radius:5px; border:none; font-family:var(--font-mono); font-size:0.76rem; font-weight:700; cursor:pointer; letter-spacing:0.5px; text-transform:uppercase; transition:all 0.14s; }
 .abtn.primary { background:#40826D; color:#fff; box-shadow:0 2px 0 #2d6355; }
-.abtn.primary:hover { background:#52a88e; }
 .abtn.primary:active { transform:translateY(2px); box-shadow:none; }
 .abtn.danger { background:#991b1b; color:#fca5a5; }
-.abtn.danger:hover { background:#b91c1c; }
 .abtn.ghost { background:rgba(255,255,255,0.05); color:#52a88e; border:1px solid #1a2e25; }
-.abtn.ghost:hover { background:rgba(64,130,109,0.15); }
+.abtn.wrong { border-color:#ef4444 !important; color:#ef4444 !important; }
+@media (hover: hover) {
+  .abtn.primary:hover { background:#52a88e; }
+  .abtn.danger:hover  { background:#b91c1c; }
+  .abtn.ghost:hover   { background:rgba(64,130,109,0.15); }
+}
 .abtn-row { display:flex; gap:7px; flex-wrap:wrap; }
 .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 .stat-card { background:rgba(64,130,109,0.06); border:1px solid #1a2e25; border-radius:6px; padding:12px; text-align:center; }
@@ -584,7 +587,8 @@ body.grownup .hint-level.l3 { color: var(--viridian-lt); }
 
 <!-- GATE CHECK OVERLAY -->
 <div class="admin-overlay" id="gateOverlay">
-  <div class="admin-modal" style="max-width:340px;text-align:center;">
+  <div class="admin-modal" style="max-width:340px;text-align:center;position:relative;">
+    <button id="gateCloseBtn" style="position:absolute;top:0;right:0;background:none;border:none;color:#3d6050;font-size:1.2rem;cursor:pointer;padding:4px 8px;line-height:1;" title="Cancel">✕</button>
     <h2 style="justify-content:center;margin-bottom:20px;">// Grownup Mode</h2>
     <p style="font-family:var(--font-mono);font-size:0.78rem;color:#52a88e;margin-bottom:22px;letter-spacing:0.5px;">Quick check before we continue</p>
     <div style="font-family:var(--font-mono);font-size:2.2rem;font-weight:700;color:#52c4a0;margin-bottom:20px;letter-spacing:2px;">2 × 5 = ?</div>
@@ -1084,6 +1088,10 @@ function appendGridRow(rowIdx) {
 //  GAME LOGIC
 // =====================================================================
 function handleKey(key) {
+  if (document.getElementById('endOverlay').classList.contains('show')) {
+    if (key === 'ENTER') startGame();
+    return;
+  }
   if (state.gameOver) return;
   const len = state.currentWord.length;
   if (key==='⌫'||key==='BACKSPACE') { if(state.currentGuess.length){state.currentGuess.pop();updateCurrentRow();} return; }
@@ -1187,24 +1195,28 @@ function showToast(msg) {
 // =====================================================================
 //  GATE CHECK
 // =====================================================================
+function closeGate() { document.getElementById('gateOverlay').classList.remove('show'); }
+
 function buildGateButtons() {
   const container=document.getElementById('gateButtons'); container.innerHTML='';
   [8,9,10,12,15].sort(()=>Math.random()-0.5).forEach(n=>{
     const btn=document.createElement('button'); btn.className='abtn ghost';
     btn.textContent=n; btn.style.cssText='min-width:52px;font-size:1rem;padding:10px 0;';
     btn.addEventListener('click',()=>{
-      if(n===10){ document.getElementById('gateOverlay').classList.remove('show'); openAdmin(); }
+      if(n===10){ closeGate(); openAdmin(); }
       else {
         const err=document.getElementById('gateError'); err.textContent='Not quite — try again';
-        btn.style.borderColor='#ef4444'; btn.style.color='#ef4444';
-        setTimeout(()=>{err.textContent='';btn.style.borderColor='';btn.style.color='';},1200);
+        btn.classList.add('wrong');
+        setTimeout(()=>{ err.textContent=''; btn.classList.remove('wrong'); },1200);
       }
     });
     container.appendChild(btn);
   });
 }
 function openGate() { buildGateButtons(); document.getElementById('gateError').textContent=''; document.getElementById('gateOverlay').classList.add('show'); }
-document.getElementById('gateOverlay').addEventListener('click',e=>{ if(e.target===document.getElementById('gateOverlay')) document.getElementById('gateOverlay').classList.remove('show'); });
+document.getElementById('gateOverlay').addEventListener('click',e=>{ if(e.target===document.getElementById('gateOverlay')) closeGate(); });
+document.getElementById('gateCloseBtn').addEventListener('click', closeGate);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&document.getElementById('gateOverlay').classList.contains('show')) closeGate(); });
 
 // =====================================================================
 //  ADMIN / SETTINGS
