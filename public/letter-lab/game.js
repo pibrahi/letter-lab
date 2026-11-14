@@ -344,7 +344,11 @@ function renderHint() {
   bar.style.display = 'flex';
   if (state.guesses.length === 0) {
     tag.textContent = 'HINT'; tag.className = 'hint-tag locked';
-    txt.innerHTML = '<span class="hint-locked-text">Hint unlocks after your first guess…</span>';
+    txt.replaceChildren();
+    const locked = document.createElement('span');
+    locked.className = 'hint-locked-text';
+    locked.textContent = 'Hint unlocks after your first guess…';
+    txt.appendChild(locked);
     return;
   }
   const active = getActiveHint();
@@ -587,57 +591,89 @@ function renderEditorCards() {
   });
 
   document.getElementById('wordCount').textContent = `${filtered.length} word${filtered.length!==1?'s':''}`;
-  grid.innerHTML = '';
+  grid.replaceChildren();
 
   if (!filtered.length) {
-    grid.innerHTML = '<div class="empty-state">No words match your filter.</div>'; return;
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.textContent = 'No words match your filter.';
+    grid.appendChild(empty);
+    return;
   }
+
+  const hintLabels = ['VAGUE', 'CLEARER', 'SPECIFIC'];
+  const hintLevels = ['l1', 'l2', 'l3'];
+  const hintPlaceholders = ['Vague clue…', 'A bit more specific…', 'Very specific clue…'];
 
   // Build index map from filtered → actual wordBank index
   filtered.forEach(entry => {
     const realIdx = state.wordBank.indexOf(entry);
     const card = document.createElement('div');
     card.className = 'word-card' + (editingIdx === realIdx ? ' editing' : '');
-    card.dataset.idx = realIdx;
+    card.dataset.idx = String(realIdx);
 
     const hints = entry.hints || [];
     const isEditing = editingIdx === realIdx;
 
-    card.innerHTML = `
-      <div class="wc-header">
-        <div class="wc-title">
-          <span class="wc-word">${entry.word}</span>
-          <span class="wc-badge">${entry.word.length}L</span>
-        </div>
-        <div class="wc-actions">
-          <button class="wc-btn edit-btn" data-idx="${realIdx}" title="${isEditing?'Done':'Edit'}">
-            ${isEditing ? '✓' : '✏'}
-          </button>
-          <button class="wc-btn del wc-del-btn" data-idx="${realIdx}" title="Delete">✕</button>
-        </div>
-      </div>
-      <div class="hint-rows">
-        ${[0,1,2].map(i => {
-          const labels = ['VAGUE','CLEARER','SPECIFIC'];
-          const lvlClass = ['l1','l2','l3'][i];
-          const val = hints[i] || '';
-          if (isEditing) {
-            return `<div class="hint-row">
-              <span class="hint-level ${lvlClass}">${labels[i]}</span>
-              <input class="hint-input" data-idx="${realIdx}" data-hint="${i}" value="${val.replace(/"/g,'&quot;')}" placeholder="${['Vague clue…','A bit more specific…','Very specific clue…'][i]}">
-            </div>`;
-          } else {
-            return `<div class="hint-row">
-              <span class="hint-level ${lvlClass}">${labels[i]}</span>
-              <span class="hint-text${val?'':' empty'}">${val || 'No hint set'}</span>
-            </div>`;
-          }
-        }).join('')}
-      </div>
-    `;
+    const header = document.createElement('div');
+    header.className = 'wc-header';
+
+    const title = document.createElement('div');
+    title.className = 'wc-title';
+    const word = document.createElement('span');
+    word.className = 'wc-word';
+    word.textContent = entry.word;
+    const badge = document.createElement('span');
+    badge.className = 'wc-badge';
+    badge.textContent = `${entry.word.length}L`;
+    title.append(word, badge);
+
+    const actions = document.createElement('div');
+    actions.className = 'wc-actions';
+    const editBtn = document.createElement('button');
+    editBtn.className = 'wc-btn edit-btn';
+    editBtn.dataset.idx = String(realIdx);
+    editBtn.title = isEditing ? 'Done' : 'Edit';
+    editBtn.textContent = isEditing ? '✓' : '✏';
+    const delBtn = document.createElement('button');
+    delBtn.className = 'wc-btn del wc-del-btn';
+    delBtn.dataset.idx = String(realIdx);
+    delBtn.title = 'Delete';
+    delBtn.textContent = '✕';
+    actions.append(editBtn, delBtn);
+    header.append(title, actions);
+
+    const rows = document.createElement('div');
+    rows.className = 'hint-rows';
+    for (let i = 0; i < 3; i++) {
+      const row = document.createElement('div');
+      row.className = 'hint-row';
+      const level = document.createElement('span');
+      level.className = `hint-level ${hintLevels[i]}`;
+      level.textContent = hintLabels[i];
+      row.appendChild(level);
+      const val = hints[i] || '';
+      if (isEditing) {
+        const input = document.createElement('input');
+        input.className = 'hint-input';
+        input.dataset.idx = String(realIdx);
+        input.dataset.hint = String(i);
+        input.value = val;
+        input.placeholder = hintPlaceholders[i];
+        row.appendChild(input);
+      } else {
+        const text = document.createElement('span');
+        text.className = 'hint-text' + (val ? '' : ' empty');
+        text.textContent = val || 'No hint set';
+        row.appendChild(text);
+      }
+      rows.appendChild(row);
+    }
+
+    card.append(header, rows);
 
     // Edit / done toggle
-    card.querySelector('.edit-btn').addEventListener('click', () => {
+    editBtn.addEventListener('click', () => {
       if (isEditing) {
         // Save hints from inputs
         const inputs = card.querySelectorAll('.hint-input');
