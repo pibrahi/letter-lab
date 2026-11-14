@@ -1,0 +1,105 @@
+.game-area {
+  width: 100%; max-width: 520px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 24px; padding: 0 0 40px;
+}
+
+/* Progress stars */
+.star-bar { display: flex; gap: 10px; justify-content: center; }
+.star { font-size: 2rem; filter: grayscale(1) opacity(0.3); transition: filter 0.3s, transform 0.3s; }
+.star.lit { filter: none; transform: scale(1.15); }
+@keyframes starPop { 0%{transform:scale(1)} 50%{transform:scale(1.7)} 100%{transform:scale(1.15)} }
+.star.pop { animation: starPop 0.4s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+/* Emoji display */
+.animal-emoji {
+  font-size: 7rem; line-height: 1; text-align: center;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.13));
+}
+@keyframes emojiBounce { 0%{transform:scale(1)} 40%{transform:scale(1.22)} 100%{transform:scale(1)} }
+.animal-emoji.bounce { animation: emojiBounce 0.5s cubic-bezier(.34,1.56,.64,1); }
+
+/* Question prompt */
+.question-prompt {
+  font-family: var(--font-mono); font-size: 1rem; font-weight: 700;
+  color: var(--text2); letter-spacing: 0.5px; text-align: center;
+  min-height: 1.5em;
+}
+
+/* Word option cards (Match mode) */
+.word-options { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.word-opt-btn {
+  min-width: 110px; padding: 14px 18px; border-radius: var(--radius-lg);
+  border: 3px solid var(--border2); background: var(--surface);
+  font-family: var(--font-mono); font-size: 1.35rem; font-weight: 700;
+  color: var(--text); cursor: pointer; text-align: center; text-transform: uppercase;
+  box-shadow: 0 4px 0 var(--border2); letter-spacing: 2px;
+  transition: all 0.1s; user-select: none;
+}
+.word-opt-btn:hover:not(:disabled) { background: var(--viridian-bg); border-color: var(--viridian); color: var(--viridian); box-shadow: 0 4px 0 var(--viridian); }
+.word-opt-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+.word-opt-btn:disabled { opacity: 0.35; pointer-events: none; }
+.word-opt-btn.correct-flash { background: var(--correct); border-color: var(--correct-b); color: var(--correct-txt); box-shadow: 0 4px 0 var(--correct-b); }
+.word-opt-btn.wrong-flash  { background: #fee2e2; border-color: #b91c1c; color: #b91c1c; animation: shake 0.42s ease; }
+
+/* Letter option buttons (First Letter + Spell mode) */
+.letter-options { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.letter-opt-btn {
+  width: 72px; height: 72px; border-radius: var(--radius-lg);
+  border: 3px solid var(--border2); background: var(--surface);
+  font-family: var(--font-mono); font-size: 2.2rem; font-weight: 700;
+  color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  text-transform: uppercase; box-shadow: 0 4px 0 var(--border2);
+  transition: all 0.1s; user-select: none;
+}
+.letter-opt-btn:hover:not(:disabled) { background: var(--viridian-bg); border-color: var(--viridian); color: var(--viridian); box-shadow: 0 4px 0 var(--viridian); }
+.letter-opt-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+.letter-opt-btn:disabled { opacity: 0.3; pointer-events: none; }
+.letter-opt-btn.used { opacity: 0; pointer-events: none; transition: opacity 0.15s; }
+
+/* Spell-it-out slots */
+.spell-slots { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.spell-slot {
+  width: 56px; height: 64px; border-radius: var(--radius);
+  border: 3px dashed var(--viridian); background: var(--viridian-bg);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 1.9rem; font-weight: 700;
+  color: var(--viridian); text-transform: uppercase; transition: all 0.18s;
+}
+.spell-slot.filled { border-style: solid; background: var(--surface); color: var(--text); }
+.spell-slot.correct { background: var(--correct); border-color: var(--correct-b); border-style: solid; color: var(--correct-txt); }
+.spell-slot.shake { animation: shake 0.42s ease; }
+
+/* Feedback */
+.result-msg {
+  font-family: var(--font-mono); font-size: 1rem; font-weight: 700;
+  color: var(--viridian); letter-spacing: 0.5px; min-height: 1.5em; text-align: center;
+}
+
+/* Mode label */
+.mode-label {
+  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
+  padding: 3px 10px; border-radius: 4px; letter-spacing: 1.5px; text-transform: uppercase;
+  background: rgba(212,160,23,0.12); color: #a87c0e; border: 1.5px solid #d4a017;
+}
+body.grownup .mode-label { color: #e6b830; border-color: #e6b830; }
+
+/* Admin */
+.mode-opts { display: flex; gap: 6px; flex-wrap: wrap; }
+.mode-opt {
+  flex: 1; min-width: 80px; padding: 9px 6px; border-radius: 5px; border: 1px solid #1a2e25;
+  font-family: var(--font-mono); font-size: 0.65rem; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.3px; text-transform: uppercase; text-align: center;
+  background: rgba(255,255,255,0.05); color: #52a88e; transition: all 0.14s;
+}
+.mode-opt.active { background: #40826D; color: #fff; border-color: #40826D; }
+
+@media (max-width: 400px) {
+  .animal-emoji { font-size: 5.5rem; }
+  .word-opt-btn { font-size: 1.1rem; min-width: 90px; }
+  .letter-opt-btn { width: 60px; height: 60px; font-size: 1.8rem; }
+  .spell-slot { width: 46px; height: 54px; font-size: 1.5rem; }
+}
+
+/* Wins over component display rules until script sets style.display. */
+.is-hidden { display: none; }

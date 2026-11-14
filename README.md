@@ -60,11 +60,11 @@ Tile-based word puzzles. Three modes:
 |---|---|
 | Runtime | Static HTML/CSS/JS — no build step |
 | Hosting | [Cloudflare Workers](https://workers.cloudflare.com/) (static assets) |
-| Fonts | [Space Mono](https://fonts.google.com/specimen/Space+Mono) + [DM Sans](https://fonts.google.com/specimen/DM+Sans) via Google Fonts |
+| Fonts | Space Mono and DM Sans, self-hosted latin WOFF2 in `public/fonts/` |
 | Storage | Browser `localStorage` only |
-| Deployment | `wrangler deploy` |
+| Deployment | Cloudflare Worker `letter-lab` (`wrangler versions upload`, then `wrangler deploy`) |
 
-Everything is vanilla. No frameworks, no bundlers, no dependencies beyond the two Google Fonts.
+Everything is vanilla. No frameworks and no bundlers. The only devDependency is Wrangler, used to upload a preview version and to deploy.
 
 ---
 
@@ -77,7 +77,9 @@ letter-lab/
 │   │   ├── lab.css          # Design system (CSS variables, shared components)
 │   │   └── lab.js           # Shared utilities (toast, confetti, grownup gate)
 │   ├── letter-lab/
-│   │   └── index.html       # Letter Lab activity (self-contained)
+│   │   ├── index.html       # Letter Lab activity
+│   │   ├── game.css
+│   │   └── game.js
 │   ├── spelling-academy/
 │   │   └── index.html       # Superhero Spelling Academy
 │   ├── word-safari/
@@ -87,38 +89,79 @@ letter-lab/
 │   ├── privacy/
 │   │   └── index.html       # Privacy policy
 │   ├── index.html           # Hub / Learning Centre
+│   ├── hub.css
+│   ├── hub.js
+│   ├── 404.html             # Custom not-found page
+│   ├── _headers             # Security headers for every path
+│   ├── fonts/               # Self-hosted WOFF2 files and their OFL licenses
 │   ├── robots.txt
 │   └── sitemap.xml
-└── wrangler.toml            # Cloudflare Workers config
+├── test/                    # node:test checks (no test dependencies)
+├── wrangler.toml            # Cloudflare Workers config
+└── package.json
 ```
 
 ---
 
-## Local development
-
-No install needed. Just open any HTML file directly in a browser, or serve the `public/` folder with any static server:
+## Setup
 
 ```bash
-# Python
-python3 -m http.server 8080 --directory public
-
-# Node (npx)
-npx serve public
+npm install
 ```
 
----
+That installs the pinned Wrangler CLI. The site itself is still static files in `public/`.
 
-## Deployment
+## Testing
 
 ```bash
-# Authenticate (first time only)
-wrangler login
-
-# Deploy to Cloudflare Workers
-wrangler deploy
+npm test
 ```
 
-The `wrangler.toml` points at `./public` as the static assets directory. All files are served as-is with no server-side logic.
+The checks are plain `node:test`. They read the headers file, the HTML, and `wrangler.toml`. They do not contact Cloudflare.
+
+To look at the site with those headers applied, serve it the way the Worker does:
+
+```bash
+npx wrangler dev
+```
+
+A plain static server will not send `public/_headers`.
+
+## Preview, then deploy
+
+Do this from a branch. Nothing here promotes a version to production until the last command.
+
+1. Branch off `main` and commit the change.
+2. Upload a version without promoting it:
+
+   ```bash
+   npm run preview
+   ```
+
+   That runs `wrangler versions upload`. It creates a new Worker version and prints a version URL. It does not move production traffic. `preview_urls` is on so that URL still exists after `workers_dev` is turned off. The URL is public.
+3. Open the version URL and review the pull request.
+4. Merge.
+5. Deploy the merged commit:
+
+   ```bash
+   npx wrangler deploy
+   ```
+
+The next deploy also turns off the public `letter-lab.*.workers.dev` hostname and attaches `www.letterlab.cc` as a custom domain. See the pull request notes before running it.
+
+## Rollback
+
+Roll production back to the previous deployment:
+
+```bash
+npx wrangler rollback
+```
+
+Or deploy a specific earlier version again from the list in the Cloudflare dashboard (Workers → letter-lab → Deployments). Rollback restores the Worker version. It does not undo DNS records that a custom domain already created.
+
+## Secrets
+
+The repository has no secrets. Wrangler reads the Cloudflare API token from the `CLOUDFLARE_API_TOKEN` environment variable. Do not commit that token, and do not put it in `wrangler.toml`. A local `wrangler login` session is an alternative on a machine you control; CI should use the environment variable.
 
 ---
 

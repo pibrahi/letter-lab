@@ -1,0 +1,46 @@
+# Security headers for every path.
+#
+# Nothing on the site plays audio or uses speech, camera, location,
+# payment, or motion sensors — the activities are visual only — so every
+# powerful feature below is denied. Cloudflare Web Analytics stays on,
+# so its beacon is the only host allowed outside 'self'.
+# img-src has no data: scheme; emoji favicons are same-origin SVG files.
+#
+# /* sets Content-Type for HTML, including directory indexes (/, /letter-lab/)
+# and the custom 404. Later rules detach that and set the real type for
+# other assets. A second Content-Type would otherwise be joined with a comma.
+
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self' https://cloudflareinsights.com; manifest-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; upgrade-insecure-requests
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), hid=(), midi=(), display-capture=(), accelerometer=(), gyroscope=(), magnetometer=(), browsing-topics=()
+  Content-Type: text/html; charset=utf-8
+
+/*.css
+  ! Content-Type
+  Content-Type: text/css; charset=utf-8
+
+/*.js
+  ! Content-Type
+  Content-Type: text/javascript; charset=utf-8
+
+/*.svg
+  ! Content-Type
+  Content-Type: image/svg+xml
+
+/*.woff2
+  ! Content-Type
+  Content-Type: font/woff2
+
+/*.txt
+  ! Content-Type
+  Content-Type: text/plain; charset=utf-8
+
+/*.xml
+  ! Content-Type
+  Content-Type: application/xml; charset=utf-8

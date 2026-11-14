@@ -10,100 +10,9 @@
 <meta property="og:url"         content="https://letterlab.cc/privacy/">
 <meta property="og:title"       content="Privacy Policy — Letter Lab">
 <meta property="og:description" content="Letter Lab collects no personal data. No accounts, no ads, no tracking.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔤</text></svg>">
+<link rel="icon" href="../favicon.svg">
 <link rel="stylesheet" href="../_shared/lab.css">
-<style>
-.privacy-view {
-  display: flex; flex-direction: column; align-items: center;
-  min-height: 100vh; min-height: 100dvh;
-  padding: 0 20px 60px; position: relative; z-index: 1;
-}
-
-.priv-header {
-  width: 100%; max-width: 680px;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 20px 0 16px;
-  border-bottom: 2px solid var(--viridian);
-  margin-bottom: 40px;
-}
-.priv-logo      { font-family: var(--font-mono); font-size: 1.45rem; font-weight: 700; color: var(--text); line-height: 1; }
-.priv-logo span { color: var(--viridian); }
-.priv-logo-sub  { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text3); letter-spacing: 2.5px; text-transform: uppercase; margin-top: 3px; }
-
-.home-btn {
-  display: flex; align-items: center; gap: 7px;
-  padding: 8px 14px; border-radius: var(--radius);
-  border: 2px solid var(--border2); background: var(--surface);
-  font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
-  color: var(--text2); cursor: pointer; letter-spacing: 0.5px; text-decoration: none;
-  box-shadow: 0 2px 0 var(--border2); transition: all var(--transition);
-}
-.home-btn:hover { border-color: var(--viridian); color: var(--viridian); background: var(--viridian-bg); }
-
-.priv-body {
-  width: 100%; max-width: 680px;
-}
-
-/* Summary banner */
-.priv-summary {
-  display: flex; gap: 12px; flex-wrap: wrap;
-  background: var(--viridian-bg); border: 2px solid var(--viridian);
-  border-radius: var(--radius-lg); padding: 20px 22px;
-  margin-bottom: 36px;
-}
-.priv-pill {
-  display: flex; align-items: center; gap: 8px;
-  font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700;
-  color: var(--viridian); letter-spacing: 0.5px;
-}
-.priv-pill .check {
-  width: 22px; height: 22px; border-radius: 50%;
-  background: var(--viridian); color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.75rem; flex-shrink: 0;
-}
-
-/* Sections */
-.priv-section {
-  margin-bottom: 32px;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 28px;
-}
-.priv-section:last-child { border-bottom: none; }
-.priv-section h2 {
-  font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 2.5px; color: var(--viridian);
-  margin-bottom: 12px;
-}
-.priv-section p {
-  font-size: 0.92rem; color: var(--text2); line-height: 1.75; margin-bottom: 10px;
-}
-.priv-section p:last-child { margin-bottom: 0; }
-.priv-section ul {
-  list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 10px;
-}
-.priv-section li {
-  display: flex; align-items: flex-start; gap: 10px;
-  font-size: 0.9rem; color: var(--text2); line-height: 1.6;
-}
-.priv-section li::before {
-  content: '→'; font-family: var(--font-mono); color: var(--viridian);
-  font-weight: 700; flex-shrink: 0; margin-top: 1px;
-}
-
-.priv-updated {
-  font-family: var(--font-mono); font-size: 0.65rem; color: var(--text3);
-  letter-spacing: 1px; text-transform: uppercase; margin-bottom: 28px;
-}
-
-.contact-block {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-lg); padding: 18px 20px;
-  font-size: 0.88rem; color: var(--text2); line-height: 1.7;
-}
-.contact-block a { color: var(--viridian); text-decoration: none; font-weight: 600; }
-.contact-block a:hover { text-decoration: underline; }
-</style>
+<link rel="stylesheet" href="privacy.css">
 </head>
 <body>
 
@@ -155,7 +64,7 @@
     <div class="priv-section">
       <h2>Third-party services</h2>
       <p>The site is hosted on <strong>Cloudflare Workers</strong>. Cloudflare may log basic request metadata (IP addresses, request paths) as part of standard infrastructure operation. This is governed by <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare's Privacy Policy</a>.</p>
-      <p>Letter Lab uses the Google Fonts API to load the Space Mono and DM Sans typefaces. Google may log font requests. You can read more in <a href="https://developers.google.com/fonts/faq/privacy" target="_blank" rel="noopener noreferrer">Google's Fonts FAQ</a>.</p>
+      <p>Space Mono and DM Sans are self-hosted on letterlab.cc. The site does not request fonts from Google or any other type provider.</p>
       <p>No other third parties have any presence on this site. There are no analytics scripts, no advertising networks, no social media embeds, and no tracking pixels of any kind.</p>
     </div>
 
@@ -180,15 +89,10 @@
 
   </div>
 
-  <footer>Made with 🩵 for L&amp;G · <a href="../" style="color:var(--viridian);text-decoration:none;">letterlab.cc</a></footer>
+  <footer>Made with 🩵 for L&amp;G · <a href="../" class="footer-home">letterlab.cc</a></footer>
 </div>
 
 <script src="../_shared/lab.js"></script>
-<script>
-try {
-  const dark = JSON.parse(localStorage.getItem('lab_dark') || 'false');
-  applyGrownup(dark);
-} catch(e) {}
-</script>
+<script src="privacy.js"></script>
 </body>
 </html>
