@@ -1,5 +1,23 @@
 name = "letter-lab"
 compatibility_date = "2025-01-01"
+# The public workers.dev hostname goes away on the next deploy.
+workers_dev = false
+# Version URLs stay available. Wrangler 4.44+ would otherwise follow
+# workers_dev and turn them off, and `npm run preview` would upload a
+# version with nowhere to open it. These URLs are not the workers.dev site.
+preview_urls = true
 
 [assets]
 directory = "./public"
+
+# Both hostnames serve this Worker. letterlab.cc is already the canonical
+# origin; www is attached the same way so it does not need a Worker script
+# in front of every static file. Deploying this creates or adopts the DNS
+# record for each hostname.
+[[routes]]
+pattern = "letterlab.cc"
+custom_domain = true
+
+[[routes]]
+pattern = "www.letterlab.cc"
+custom_domain = true
