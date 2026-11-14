@@ -9,6 +9,7 @@ preview_urls = true
 
 [assets]
 directory = "./public"
+not_found_handling = "404-page"
 
 # Both hostnames serve this Worker. letterlab.cc is already the canonical
 # origin; www is attached the same way so it does not need a Worker script
