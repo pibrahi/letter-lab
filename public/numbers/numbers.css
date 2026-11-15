@@ -1,0 +1,44 @@
+.numbers-view { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; min-height: 100vh; min-height: 100dvh; padding: 0 16px 20px; }
+.numbers-view header { max-width: 720px; width: 100%; margin-bottom: 24px; }
+.hub-logo { font-family: var(--font-mono); font-size: 1.55rem; line-height: 1; color: var(--text); }
+.hub-logo span { color: var(--viridian-text); }
+.hub-logo-sub { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text3); letter-spacing: 2.5px; text-transform: uppercase; margin-top: 3px; }
+.header-controls { display: flex; gap: 10px; }
+.btn-icon, .gear-btn { min-width: 64px; min-height: 64px; }
+main { width: 100%; max-width: 720px; padding-bottom: 32px; text-align: center; }
+.visual-tagline { font-size: 2.5rem; margin-bottom: 12px; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.difficulty-pill { display: inline-block; padding: 8px 16px; background: var(--viridian-bg); color: var(--viridian-text); border: 1px solid var(--viridian-text); border-radius: 24px; margin-bottom: 24px; font-family: var(--font-mono); font-size: 0.8rem; }
+.game-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.game-card { background: var(--surface); border: 2px solid var(--border); border-top: 6px solid var(--card-accent); border-radius: 16px; padding: 24px 16px; display: flex; flex-direction: column; align-items: center; gap: 12px; box-shadow: 0 4px 0 var(--border); }
+.card-0 { --card-accent: #356f5c; }
+.card-1 { --card-accent: #c2410c; }
+.card-2 { --card-accent: #7c3aed; }
+.card-3 { --card-accent: #2563eb; }
+.card-4 { --card-accent: #a87c0e; }
+.card-icon { font-size: 4rem; line-height: 1.2; }
+.game-card h2 { font-family: var(--font-mono); font-size: 1rem; color: var(--text); }
+.game-card p { font-size: 0.85rem; color: var(--text2); }
+.skill-tag { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text3); }
+.soon-badge { margin-top: auto; padding: 7px 12px; border-radius: 6px; border: 1px dashed var(--text3); background: var(--bg); color: var(--text2); font-size: 0.8rem; font-weight: 700; }
+footer a { display: inline-flex; align-items: center; min-height: 64px; padding: 0 8px; color: var(--viridian-text); }
+.tier-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.tier-button { min-height: 100px; text-transform: none; padding: 10px; }
+.tier-button span { display: block; margin-bottom: 6px; }
+.tier-button small { font: inherit; font-size: 0.68rem; font-weight: 400; color: var(--admin-text); }
+.admin-modal [aria-pressed="true"] { border-color: var(--admin-highlight); background: var(--admin-hover-bg); color: var(--admin-highlight); }
+.adapt-note { color: var(--admin-text); font-size: 0.8rem; margin: 16px 0; }
+.floor-options { display: grid; gap: 8px; }
+.admin-modal button { min-height: 64px; }
+.progress-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 14px; font-size: 0.8rem; }
+.gate-wrong { outline: 2px solid var(--error); }
+@media (max-width: 480px) {
+  .game-grid { grid-template-columns: 1fr; }
+  .hub-logo { font-size: 1.2rem; }
+  .header-controls { gap: 6px; }
+  .admin-modal { padding: 16px; }
+  .admin-section { padding: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
