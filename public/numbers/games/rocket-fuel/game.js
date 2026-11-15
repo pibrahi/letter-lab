@@ -2,7 +2,7 @@
   const {levels, addition, counting, adapt, store} = NumberLab;
   const el = id => document.getElementById(id);
   let state = store.load(), challenge, submitted, placed = [], hint;
-  let round = 0, wins = 0, previous, demoTimer, advanceTimer;
+  let round = 0, wins = 0, previous, previousKind, demoTimer, advanceTimer;
   const seen = new Set();
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let keyboard = false;
@@ -133,8 +133,8 @@
     stopDemo(); clearTimeout(advanceTimer);
     if (round === 5) { end(); return; }
     const skill = state.skills.addition; hint = skill.hintLevel;
-    challenge = addition.makeChallenge(skill.tier, Math.random, {hintLevel:hint, avoidType:previous});
-    previous = challenge.type; submitted = false; placed = [];
+    challenge = addition.makeChallenge(skill.tier, Math.random, {hintLevel:hint, avoidType:previous, avoidKind:previousKind});
+    previous = challenge.type; previousKind = challenge.kind ?? previousKind; submitted = false; placed = [];
     el('play').className = challenge.tier >= 2 ? 'many' : '';
     el('actions').className = 'actions'; el('actions').replaceChildren(); showPill();
     const c = challenge;

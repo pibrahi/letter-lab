@@ -2,6 +2,19 @@
   const root = typeof window !== 'undefined' ? window : globalThis;
   const {clampTier, tierById} = root.NumberLab?.levels || require('./levels.js');
   const types = [['combine','fillTo'], ['combine','fillTo'], ['combine','bond','fillTo'], ['twoDigit','bond','build'], ['mental','bond','build'], ['threeAddends','balance','ways']];
+  // Builder mixes these addition facts (all within 20); avoidKind stops back-to-back repeats.
+  const BUILDER_KINDS = ['withinTen','crossTen','teenPlus','doubles','plusTen'];
+  function builderCombine(int, pick, avoidKind) {
+    const kind = pick(BUILDER_KINDS.filter(k => k !== avoidKind));
+    let a, b;
+    if (kind === 'withinTen') { const sum = int(4, 10); a = int(1, sum - 1); b = sum - a; }
+    else if (kind === 'crossTen') { const sum = int(11, 18); a = int(sum - 9, 9); b = sum - a; }
+    else if (kind === 'teenPlus') { a = int(11, 18); b = int(1, 19 - a); }
+    else if (kind === 'doubles') { a = int(2, 10); b = a < 10 ? a + int(0, 1) : a; }
+    else { a = int(1, 9); b = 10; }
+    if (kind !== 'crossTen' && kind !== 'withinTen' && int(0, 1)) [a, b] = [b, a];
+    return {kind, a, b};
+  }
   function makeChallenge(tier, rng = Math.random, opts = {}) {
     tier = clampTier(tier);
     const int = (min, max) => min + Math.floor(rng() * (max - min + 1));
@@ -15,7 +28,9 @@
     const max = tierById(tier).maxNumber;
     const type = pick(types[tier].filter(t => t !== opts.avoidType));
     const c = {type, tier, answer:0};
-    if (type === 'combine') {
+    if (type === 'combine' && tier === 2) {
+      Object.assign(c, builderCombine(int, pick, opts.avoidKind)); c.answer = c.a + c.b;
+    } else if (type === 'combine') {
       const sum = int(tier === 2 ? 11 : 2, max);
       c.a = tier === 2 ? (sum <= 18 ? int(sum - 9, 9) : int(2, sum - 2)) : int(1, sum - 1);
       c.b = sum - c.a; c.answer = sum;
@@ -60,7 +75,7 @@
     return c;
   }
   function checkAnswer(challenge, value) { return Number.isSafeInteger(value) && value === challenge.answer; }
-  const api = {makeChallenge, checkAnswer};
+  const api = {makeChallenge, checkAnswer, BUILDER_KINDS};
   root.NumberLab = root.NumberLab || {}; root.NumberLab.addition = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })();

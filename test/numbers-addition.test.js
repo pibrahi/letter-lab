@@ -9,10 +9,35 @@ function bounds(value, max) {
   else if (Array.isArray(value)) value.forEach(v => bounds(v, max));
   else if (value && typeof value === 'object') Object.entries(value).forEach(([key,v]) => { if (key !== 'tier') bounds(v, max); });
 }
+// Each Builder fact kind has its defining shape, always within 20.
+function builderKind(c) {
+  const [hi, lo] = c.a >= c.b ? [c.a, c.b] : [c.b, c.a];
+  assert.ok(c.answer <= 20);
+  if (c.kind === 'withinTen') assert.ok(c.answer >= 4 && c.answer <= 10);
+  else if (c.kind === 'crossTen') assert.ok(c.a <= 9 && c.b <= 9 && c.answer >= 11);
+  else if (c.kind === 'teenPlus') assert.ok(hi >= 11 && lo >= 1 && lo <= 9 && hi % 10 + lo <= 9);
+  else if (c.kind === 'doubles') assert.ok(hi - lo <= 1 && lo >= 2);
+  else if (c.kind === 'plusTen') assert.ok(hi === 10 && lo >= 1 && lo <= 9);
+  else assert.fail(`unknown Builder kind ${c.kind}`);
+}
+test('Builder addition mixes every fact kind without back-to-back repeats', () => {
+  const {BUILDER_KINDS} = require('../public/numbers/engine/addition.js');
+  for (const seed of [11, 222, 3333, 44444]) {
+    const rng = seeded(seed), counts = Object.fromEntries(BUILDER_KINDS.map(k => [k, 0]));
+    let previousKind, total = 0;
+    for (let i = 0; i < 4000; i++) {
+      const c = makeChallenge(2, rng, {avoidType:'bond', avoidKind:previousKind});
+      if (c.type !== 'combine') continue;
+      builderKind(c); assert.notEqual(c.kind, previousKind);
+      counts[c.kind]++; total++; previousKind = c.kind;
+    }
+    Object.entries(counts).forEach(([kind, n]) => assert.ok(n / total > 0.12 && n / total < 0.28, `${kind} ${n}/${total}`));
+  }
+});
 for (const tier of TIERS) for (const hintLevel of [0,1,2]) {
   test(`addition properties tier ${tier.id}, hint ${hintLevel}`, () => {
     const rng = seeded(1234), duplicate = seeded(1234), seen = new Set();
-    let previous, bonds = 0, nonRound = 0, combines = 0, crossing = 0;
+    let previous, bonds = 0, nonRound = 0;
     for (let i = 0; i < 2000; i++) {
       const opts = {hintLevel, avoidType:previous};
       const c = makeChallenge(tier.id, rng, opts);
@@ -31,9 +56,8 @@ for (const tier of TIERS) for (const hintLevel of [0,1,2]) {
       } else assert.ok(['fillTo','build'].includes(c.type));
       if (['combine','twoDigit','mental','build'].includes(c.type)) assert.equal(c.a + c.b, c.answer);
       if (c.type === 'combine') {
-        assert.ok(c.a >= (tier.id === 2 ? 2 : 1) && c.b >= (tier.id === 2 ? 2 : 1));
-        assert.ok(c.answer >= (tier.id === 2 ? 11 : 2));
-        combines++; if (c.a < 10 && c.b < 10 && c.answer > 10) crossing++;
+        assert.ok(c.a >= 1 && c.b >= 1 && c.answer >= 2);
+        if (tier.id === 2) builderKind(c); else assert.equal(c.kind, undefined);
       }
       if (c.type === 'fillTo') {
         assert.equal(c.start + c.answer, c.target); assert.ok(c.answer >= 1);
@@ -71,7 +95,6 @@ for (const tier of TIERS) for (const hintLevel of [0,1,2]) {
       }
     }
     assert.deepEqual([...seen].sort(), [...allowed[tier.id]].sort());
-    if (tier.id === 2) assert.ok(crossing >= combines / 2);
     if (tier.id === 4) assert.ok(nonRound >= bonds / 2);
   });
 }
