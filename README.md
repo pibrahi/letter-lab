@@ -21,7 +21,7 @@ Kids save broken words from the villain. Two modes:
 - **Fix the Word** — one letter is missing from a word; tap the correct one from four choices
 - **Villain Mix-Up** — letters are scrambled; tap them in the right order to unscramble
 
-Earn a printable Hero Badge after five correct answers in a row.
+Earn an on-screen Hero Badge after five correct answers in a row.
 
 ---
 
@@ -60,7 +60,6 @@ Grownup settings offer 3, 4 or 6 pairs. Earn up to three stars per board; lifeti
 - **Mobile-first** — designed for tablets and phones; double-tap zoom disabled
 - **Dark mode** — toggled from the hub; preference syncs across all activities
 - **Grownup gate** — settings panels are locked behind a fresh addition or multiplication question with five shuffled answers; consecutive questions never repeat to keep kids out of the admin area
-- **Printable badges** — the Spelling Academy hero badge prints cleanly via CSS `@media print`
 
 ---
 
