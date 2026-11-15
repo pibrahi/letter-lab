@@ -91,3 +91,9 @@ body.grownup .card-mode-tag { background: rgba(255,255,255,0.04); border-color: 
   font-family: var(--font-mono);
   font-size: 0.72rem;
 }
+
+.game-card.c-blue:hover { border-color: #2563eb; box-shadow: 0 6px 0 #1d4ed8; }
+.game-card.c-blue::before { background: rgba(37,99,235,0.07); }
+@media (min-width: 481px) {
+  .game-card:last-child:nth-child(odd) { grid-column: 1 / -1; width: calc((100% - 16px) / 2); justify-self: center; }
+}

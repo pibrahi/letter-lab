@@ -41,6 +41,16 @@ Tile-based word puzzles. Three modes:
 
 ---
 
+### 🃏 Memory Match `2+`
+Flip cards and find pairs with no timer or losing. Three modes:
+- **Picture Pairs (2+)** — match identical animal pictures
+- **Picture & Word (3+)** — match animal pictures to uppercase words
+- **Big & Little (3+)** — match uppercase and lowercase letters
+
+Grownup settings offer 3, 4 or 6 pairs. Earn up to three stars per board; lifetime pairs and boards cleared stay on this device.
+
+---
+
 ## Design principles
 
 - **No audio** — fully visual; works anywhere without headphones
@@ -86,6 +96,11 @@ letter-lab/
 │   │   └── index.html       # Word Safari
 │   ├── puzzle-words/
 │   │   └── index.html       # Puzzle Words
+│   ├── memory-match/
+│   │   ├── index.html       # Memory Match
+│   │   ├── game.css
+│   │   ├── game.js
+│   │   └── favicon.svg
 │   ├── privacy/
 │   │   └── index.html       # Privacy policy
 │   ├── index.html           # Hub / Learning Centre
@@ -174,6 +189,7 @@ Each activity ships with a built-in word bank:
 | Letter Lab | 130+ words (4 and 5 letters), each with 3-level progressive hints |
 | Spelling Academy | 50+ words (3–5 letters) with emojis |
 | Word Safari | 32 animals with emojis |
+| Memory Match | Short-word subset of Safari animals + alphabet |
 | Puzzle Words | 32 tile words · 15 sentences · 15 rhyme pairs |
 
 Letter Lab includes a full **word editor** (accessible via the grownup gate) to add, edit, or remove words and their hints.
