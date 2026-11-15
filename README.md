@@ -59,7 +59,7 @@ Grownup settings offer 3, 4 or 6 pairs. Earn up to three stars per board; lifeti
 - **No ads** — ever
 - **Mobile-first** — designed for tablets and phones; double-tap zoom disabled
 - **Dark mode** — toggled from the hub; preference syncs across all activities
-- **Grownup gate** — settings panels are locked behind a simple maths check (2×5=?) to keep kids out of the admin area
+- **Grownup gate** — settings panels are locked behind a fresh addition or multiplication question with five shuffled answers; consecutive questions never repeat to keep kids out of the admin area
 - **Printable badges** — the Spelling Academy hero badge prints cleanly via CSS `@media print`
 
 ---

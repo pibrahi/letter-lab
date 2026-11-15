@@ -57,7 +57,7 @@
   text-transform: uppercase; box-shadow: 0 4px 0 var(--viridian-dk);
   transition: all 0.1s; user-select: none;
 }
-.tile-btn:hover:not(:disabled) { background: var(--viridian); color: var(--on-accent); }
+.tile-btn:hover:not(:disabled) { background: var(--viridian); color: var(--button-text); }
 .tile-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
 .tile-btn.used { opacity: 0; pointer-events: none; transition: opacity 0.15s; }
 .tile-btn:disabled { opacity: 0.3; pointer-events: none; }

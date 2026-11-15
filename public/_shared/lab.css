@@ -53,40 +53,42 @@
 
 :root {
   /* Fixed colours for chrome and accents that do not change with the theme. */
-  --brand-viridian: #40826d;
+  --brand-viridian: #356f5c;
   --brand-viridian-shadow: #2d6355;
   --admin-accent: #52a88e;
   --on-accent: #ffffff;
   --danger-hover: #b91c1c;
   --danger-bg: #991b1b;
-  --admin-border: #1a2e25;
-  --admin-muted: #3d6050;
-  --hint-gold: #a87c0e;
+  --admin-border: #637d70;
+  --admin-muted: #8aad9f;
+  --hint-gold: #795900;
   --hint-gold-bright: #e6b830;
   --admin-text: #c8ddd6;
   --admin-highlight: #52c4a0;
   --brand-gold: #d4a017;
   --night-surface: #141c19;
   --error: #ef4444;
-  --night-border-strong: #3a4d45;
+  --night-border-strong: #637d70;
   --admin-bg: #0a100d;
   --admin-ghost-bg: rgba(255,255,255,0.05);
   --admin-input-bg: rgba(255,255,255,0.04);
   --admin-hover-bg: rgba(64,130,109,0.15);
   --admin-accent-wash: rgba(64,130,109,0.1);
 
-  --viridian:    #40826D;
+  --viridian:    #356f5c;
   --viridian-dk: #2d6355;
-  --viridian-lt: #5aac93;
+  --viridian-lt: #397660;
   --viridian-bg: #e8f4f0;
+  --viridian-text: #356f5c;
+  --button-text: #ffffff;
   --bg:          #f0f2f1;
   --surface:     #ffffff;
   --border:      #c2ccc8;
-  --border2:     #9aada7;
+  --border2:     #74877e;
   --text:        #111816;
   --text2:       #3d5048;
-  --text3:       #6b8278;
-  --correct:     #40826D; --correct-b: #2d6355; --correct-txt: #ffffff;
+  --text3:       #56695f;
+  --correct:     #356f5c; --correct-b: #2d6355; --correct-txt: #ffffff;
   --present:     #d4a017; --present-b: #a87c0e; --present-txt: #1a1200;
   --font-mono: 'Space Mono', monospace;
   --font-sans:  'DM Sans', sans-serif;
@@ -94,10 +96,12 @@
   --transition: 0.15s ease;
 }
 body.grownup {
-  --bg: #0c1210; --surface: #141c19; --border: #253029; --border2: #3a4d45;
-  --text: #e4ede9; --text2: #8aad9f; --text3: #4d6b5e;
+  --bg: #0c1210; --surface: #141c19; --border: #253029; --border2: #637d70;
+  --text: #e4ede9; --text2: #8aad9f; --text3: #7a9b8c;
   --viridian: #52a88e; --viridian-dk: #3d8870; --viridian-lt: #6ec4a8;
   --viridian-bg: rgba(64,130,109,0.12);
+  --viridian-text: #52a88e;
+  --button-text: #0c1210;
   --correct: #52a88e; --correct-b: #3d8870; --correct-txt: #0c1210;
   --present: #e6b830; --present-b: #c49a1a; --present-txt: #0c0900;
 }
@@ -151,7 +155,7 @@ header {
 .btn-icon:active { transform: translateY(2px); box-shadow: none; }
 .btn-next {
   height: 36px; padding: 0 12px; border-radius: var(--radius);
-  border: 2px solid var(--viridian-dk); background: var(--viridian); color: var(--on-accent);
+  border: 2px solid var(--viridian-dk); background: var(--viridian); color: var(--button-text);
   font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; letter-spacing: 1px;
   cursor: pointer; box-shadow: 0 3px 0 var(--viridian-dk); transition: all var(--transition);
 }
@@ -173,7 +177,7 @@ header {
 body.grownup .gear-btn .dot { display: block; }
 body.grownup .gear-btn { border-color: var(--viridian); color: var(--viridian); background: var(--viridian-bg); }
 .btn-primary {
-  background: var(--viridian); color: var(--on-accent); border: none; border-radius: var(--radius);
+  background: var(--viridian); color: var(--button-text); border: none; border-radius: var(--radius);
   padding: 11px 30px; font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700;
   cursor: pointer; letter-spacing: 1px; text-transform: uppercase;
   box-shadow: 0 3px 0 var(--viridian-dk);
@@ -242,9 +246,9 @@ body.grownup .gear-btn { border-color: var(--viridian); color: var(--viridian); 
 .af select option { background: var(--admin-bg); }
 .abtn { padding: 8px 16px; border-radius: 5px; border: none; font-family: var(--font-mono); font-size: 0.76rem; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; text-transform: uppercase; transition: all 0.14s; }
 .abtn.primary { background: var(--brand-viridian); color: var(--on-accent); box-shadow: 0 2px 0 var(--brand-viridian-shadow); }
-.abtn.primary:hover { background: var(--admin-accent); }
+.abtn.primary:hover { background: var(--admin-accent); color: var(--admin-bg); }
 .abtn.primary:active { transform: translateY(2px); box-shadow: none; }
-.abtn.danger { background: var(--danger-bg); color: #fca5a5; }
+.abtn.danger { background: var(--danger-bg); color: var(--on-accent); }
 .abtn.danger:hover { background: var(--danger-hover); }
 .abtn.ghost { background: var(--admin-ghost-bg); color: var(--admin-accent); border: 1px solid var(--admin-border); }
 .abtn.ghost:hover { background: var(--admin-hover-bg); }
@@ -299,6 +303,9 @@ footer {
 }
 .toggle-row {
   width: 100%;
+  background: var(--admin-ghost-bg);
+  color: var(--admin-accent);
+  border: 1px solid var(--admin-border);
   text-align: left;
   display: flex;
   align-items: center;
@@ -314,4 +321,7 @@ footer {
 }
 .overlay-close { text-align: center; margin-top: 6px; }
 .footer-home { color: var(--viridian); text-decoration: none; }
-.keep-playing { background: var(--text2); }
+.keep-playing { background: var(--text2); color: var(--bg); }
+
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--viridian); outline-offset: 3px; }
+.admin-modal :focus-visible { outline-color: var(--admin-highlight); }
