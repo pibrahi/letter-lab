@@ -16,6 +16,10 @@ test('Memory Match page files and external assets exist', () => {
   }
   assert.ok(html.includes('https://letterlab.cc/memory-match/'));
   assert.match(html, /aria-live="polite"/);
+  const winPanel = html.match(/<section\b[^>]*\bid="winPanel"[^>]*>/)[0];
+  assert.match(winPanel, /role="dialog"/);
+  assert.match(winPanel, /aria-modal="true"/);
+  assert.match(read('public/memory-match/game.css'), /\.board\.pairs-4\s*\{[^}]*grid-template-columns:\s*repeat\(4,\s*minmax\(0,\s*1fr\)\)/);
 });
 
 test('hub and sitemap include Memory Match', () => {
