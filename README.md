@@ -74,7 +74,7 @@ Grownup settings offer 3, 4 or 6 pairs. Earn up to three stars per board; lifeti
 | Storage | Browser `localStorage` only |
 | Deployment | Cloudflare Worker `letter-lab` (`wrangler versions upload`, then `wrangler deploy`) |
 
-Everything is vanilla. No frameworks and no bundlers. The only devDependency is Wrangler, used to upload a preview version and to deploy.
+Everything is vanilla. No frameworks and no bundlers. Development dependencies provide Wrangler for previews and deployment, ESLint for JavaScript, and Stylelint for CSS.
 
 ---
 
@@ -85,7 +85,8 @@ letter-lab/
 ├── public/
 │   ├── _shared/
 │   │   ├── lab.css          # Design system (CSS variables, shared components)
-│   │   └── lab.js           # Shared utilities (toast, confetti, grownup gate)
+│   │   ├── lab.js           # Shared utilities (toast, confetti, grownup gate)
+│   │   └── words.js         # Shared emoji word bank and per-game lists
 │   ├── letter-lab/
 │   │   ├── index.html       # Letter Lab activity
 │   │   ├── game.css
@@ -111,20 +112,56 @@ letter-lab/
 │   ├── fonts/               # Self-hosted WOFF2 files and their OFL licenses
 │   ├── robots.txt
 │   └── sitemap.xml
+├── .github/workflows/ci.yml # Lint, tests, and checksum-verified secret scan
+├── .githooks/pre-push       # Local lint, tests, optional gitleaks scan
+├── eslint.config.js         # Browser scripts and Node test lint settings
+├── .stylelintrc.json         # CSS correctness checks; preserves compact style
 ├── test/                    # node:test checks (no test dependencies)
+│   ├── site.test.js
+│   ├── memory-match.test.js
+│   ├── words.test.js
+│   └── tooling.test.js
 ├── wrangler.toml            # Cloudflare Workers config
 └── package.json
 ```
 
 ---
 
-## Setup
+## Architecture
+
+Classic browser scripts load shared helpers before each game's script. `public/_shared/lab.js` provides `showToast(message)` (an 1800 ms toast), `launchConfetti(grownup)` (smaller, slower, muted confetti when true), `applyGrownup(on)` (the theme class), `syncGrownupBtn(grownup)` (theme and toggle UI), and `renderStars(progress)` (the five-star progress bar). `openGate(onSuccess, options = {})` opens the maths gate and calls the callback on success; `options.wrongClass` supplies a temporary wrong-answer class, otherwise inline error colours are used. `closeGate()` closes it.
+
+`public/_shared/lab.css` defines shared components and design tokens. Themed tokens such as `--bg`, `--surface`, `--text`, `--border`, `--viridian`, `--correct`, and `--present` change under `body.grownup`. Fixed tokens such as `--brand-viridian`, `--admin-accent`, `--on-accent`, and `--error` retain their colours for chrome and accents; typography, radii, and transition tokens are fixed too.
+
+`public/_shared/words.js` exposes the frozen `LAB_WORDS` emoji bank and per-game word lists. `pick(listName)` returns fresh word/emoji objects: Memory Match uses `memoryAnimals`, Word Safari uses `safariAnimals`, Spelling Academy uses `spellingWords`, and Puzzle Words uses `tileWords`. Letter Lab keeps its own words and progressive hints; Puzzle Words keeps its sentence and rhyme data locally. Memory Match and the word bank also support CommonJS for tests.
+
+## Development
 
 ```bash
 npm install
 ```
 
-That installs the pinned Wrangler CLI. The site itself is still static files in `public/`.
+That installs the pinned development tools and runs `prepare` to wire the pre-push hook. The site itself is still static files in `public/`.
+
+```bash
+npm run lint
+npm test
+npm run check
+```
+
+`lint` runs ESLint and Stylelint; `check` runs lint and tests together. The POSIX pre-push hook runs lint and tests, then scans Git history with gitleaks when installed; otherwise it prints a note and continues. To enable the hook manually in an existing checkout:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+## CI
+
+GitHub Actions runs on pull requests and pushes to `main`. The `check` job uses Node 24, installs with `npm ci --ignore-scripts`, runs lint and all tests, then scans Git history with gitleaks 8.30.1 after verifying the downloaded archive's SHA-256 checksum. Checkout and setup-node are pinned to full commit SHAs. The workflow grants only `contents: read`, disables persisted checkout credentials, and cancels older runs for the same ref.
+
+## Branch protection
+
+Configure `main` to require a pull request and the `check` status to pass before merging. Do not require approvals: this project has a single maintainer.
 
 ## Testing
 
@@ -132,7 +169,7 @@ That installs the pinned Wrangler CLI. The site itself is still static files in 
 npm test
 ```
 
-The checks are plain `node:test`. They read the headers file, the HTML, and `wrangler.toml`. They do not contact Cloudflare.
+The checks are plain `node:test`. They cover site configuration and assets, Memory Match logic, the shared word bank, and tooling safeguards. The shell expands `test/*.test.js` to all four test files on Node 24. They do not contact Cloudflare.
 
 To look at the site with those headers applied, serve it the way the Worker does:
 

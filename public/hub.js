@@ -40,7 +40,7 @@
 })();
 
 let grownup = false;
-try { grownup = JSON.parse(localStorage.getItem('lab_dark') || 'false'); } catch(e) {}
+try { grownup = JSON.parse(localStorage.getItem('lab_dark') || 'false'); } catch { /* Storage may be unavailable or contain invalid data; keep the fallback. */ }
 
 function applyDark() {
   applyGrownup(grownup);
@@ -55,7 +55,7 @@ function applyDark() {
     ll.grownup = grownup;
     localStorage.setItem('letterLabState3', JSON.stringify(ll));
     localStorage.setItem('lab_dark', JSON.stringify(grownup));
-  } catch(e) {}
+  } catch { /* Storage may be unavailable or contain invalid data; keep the fallback. */ }
 }
 
 function loadStats() {
@@ -70,7 +70,7 @@ function loadStats() {
     document.getElementById('statWS').textContent = ws.correct         ?? 0;
     document.getElementById('statMM').textContent = mm.pairsFound      ?? 0;
     document.getElementById('statPW').textContent = pw.solved          ?? 0;
-  } catch(e) {}
+  } catch { /* Storage may be unavailable or contain invalid data; keep the fallback. */ }
 }
 
 document.getElementById('darkToggle').addEventListener('click', () => { grownup = !grownup; applyDark(); });

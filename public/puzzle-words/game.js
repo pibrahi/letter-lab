@@ -25,16 +25,7 @@
 })();
 
 // ── WORD BANKS ─────────────────────────────────────────────
-const TILE_WORDS = [
-  {w:'CAT',e:'🐱'},{w:'DOG',e:'🐶'},{w:'FOX',e:'🦊'},{w:'BEE',e:'🐝'},
-  {w:'OWL',e:'🦉'},{w:'SUN',e:'☀️'},{w:'HAT',e:'🎩'},{w:'CUP',e:'☕'},
-  {w:'BOX',e:'📦'},{w:'BUS',e:'🚌'},{w:'CAR',e:'🚗'},{w:'MAP',e:'🗺️'},
-  {w:'BEAR',e:'🐻'},{w:'DUCK',e:'🦆'},{w:'FISH',e:'🐟'},{w:'FROG',e:'🐸'},
-  {w:'LION',e:'🦁'},{w:'STAR',e:'⭐'},{w:'MOON',e:'🌙'},{w:'CAKE',e:'🎂'},
-  {w:'BIRD',e:'🐦'},{w:'CRAB',e:'🦀'},{w:'RAIN',e:'🌧️'},{w:'BOOK',e:'📚'},
-  {w:'TIGER',e:'🐯'},{w:'HORSE',e:'🐴'},{w:'APPLE',e:'🍎'},{w:'GRAPE',e:'🍇'},
-  {w:'PIZZA',e:'🍕'},{w:'EAGLE',e:'🦅'},{w:'PANDA',e:'🐼'},{w:'TRAIN',e:'🚂'},
-];
+const TILE_WORDS = LAB_WORDS.pick('tileWords');
 
 const SENTENCES = [
   {s:'The ___ can fly.',       a:{w:'Bird',  e:'🐦'}, d:[{w:'Fish', e:'🐟'},{w:'Pig',  e:'🐷'}]},
@@ -86,10 +77,10 @@ try {
   if (s.grownup) st.grownup = s.grownup;
   if (s.solved)  st.solved  = s.solved;
   if (s.streak)  st.streak  = s.streak;
-} catch(e) {}
+} catch { /* Storage may be unavailable or contain invalid data; keep the fallback. */ }
 
 function save() {
-  try { localStorage.setItem('pw_v1', JSON.stringify({mode:st.mode,grownup:st.grownup,solved:st.solved,streak:st.streak})); } catch(e) {}
+  try { localStorage.setItem('pw_v1', JSON.stringify({mode:st.mode,grownup:st.grownup,solved:st.solved,streak:st.streak})); } catch { /* Storage may be unavailable or contain invalid data; keep the fallback. */ }
 }
 
 function hideAll() {

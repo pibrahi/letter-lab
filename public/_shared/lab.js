@@ -32,7 +32,11 @@ function applyGrownup(on) {
   document.body.classList.toggle('grownup', on);
 }
 
-function openGate(onSuccess) {
+function closeGate() {
+  document.getElementById('gateOverlay').classList.remove('show');
+}
+
+function openGate(onSuccess, options = {}) {
   const container = document.getElementById('gateButtons');
   const err = document.getElementById('gateError');
   err.textContent = '';
@@ -44,13 +48,18 @@ function openGate(onSuccess) {
     btn.style.cssText = 'min-width:52px;font-size:1rem;padding:10px 0;';
     btn.addEventListener('click', () => {
       if (n === 10) {
-        document.getElementById('gateOverlay').classList.remove('show');
+        closeGate();
         onSuccess();
       } else {
         err.textContent = 'Not quite — try again';
-        btn.style.borderColor = '#ef4444';
-        btn.style.color = '#ef4444';
-        setTimeout(() => { err.textContent = ''; btn.style.borderColor = ''; btn.style.color = ''; }, 1200);
+        if (options.wrongClass) {
+          btn.classList.add(options.wrongClass);
+          setTimeout(() => { err.textContent = ''; btn.classList.remove(options.wrongClass); }, 1200);
+        } else {
+          btn.style.borderColor = '#ef4444';
+          btn.style.color = '#ef4444';
+          setTimeout(() => { err.textContent = ''; btn.style.borderColor = ''; btn.style.color = ''; }, 1200);
+        }
       }
     });
     container.appendChild(btn);

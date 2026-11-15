@@ -4,8 +4,8 @@ header { flex-wrap: wrap; gap: 12px; }
 .mode-opts { display: flex; gap: 6px; flex-wrap: wrap; width: 100%; }
 .mode-opt { flex: 1; min-width: 72px; min-height: 64px; padding: 8px; border: 2px solid var(--border2); border-radius: var(--radius); background: var(--surface); color: var(--text2); font: 700 0.72rem var(--font-mono); cursor: pointer; }
 .mode-opt.active { background: var(--viridian); border-color: var(--viridian-dk); color: var(--correct-txt); }
-.admin-modal .mode-opt { background: #141c19; border-color: #3a4d45; color: #c8ddd6; }
-.admin-modal .mode-opt.active { background: #40826D; color: white; }
+.admin-modal .mode-opt { background: var(--night-surface); border-color: var(--night-border-strong); color: var(--admin-text); }
+.admin-modal .mode-opt.active { background: var(--brand-viridian); color: white; }
 .board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; }
 .board.pairs-3, .board.pairs-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .board.pairs-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }

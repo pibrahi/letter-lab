@@ -1,3 +1,3 @@
 try {
   applyGrownup(JSON.parse(localStorage.getItem('lab_dark') || 'false'));
-} catch (e) {}
+} catch { /* Storage may be unavailable or contain invalid data; keep the fallback. */ }

@@ -1,8 +1,5 @@
-const ANIMALS = [
-  {w:'CAT',e:'🐱'},{w:'DOG',e:'🐶'},{w:'COW',e:'🐮'},{w:'PIG',e:'🐷'},
-  {w:'HEN',e:'🐔'},{w:'FOX',e:'🦊'},{w:'OWL',e:'🦉'},{w:'BEE',e:'🐝'},
-  {w:'DUCK',e:'🦆'},{w:'FROG',e:'🐸'},{w:'BEAR',e:'🐻'},{w:'LION',e:'🦁'},
-];
+const WORDS_LIB = typeof LAB_WORDS !== 'undefined' ? LAB_WORDS : require('../_shared/words.js');
+const ANIMALS = WORDS_LIB.pick('memoryAnimals');
 const MODES = {picture:'Picture Pairs', word:'Picture & Word', letter:'Big & Little'};
 
 function shuffle(items, rng = Math.random) {
@@ -46,11 +43,11 @@ if (typeof document !== 'undefined') {
     for (const key of ['pairsFound','boardsCleared']) {
       if (Number.isSafeInteger(s?.[key]) && s[key] >= 0) st[key] = s[key];
     }
-  } catch(e) {}
+  } catch { /* Storage may be unavailable or contain invalid data; keep the fallback. */ }
   const el = id => document.getElementById(id);
   let deck, buttons, revealed = [], matched = new Set(), turns = 0, resetTimer;
   function save() {
-    try { localStorage.setItem('mm_v1', JSON.stringify(st)); } catch(e) {}
+    try { localStorage.setItem('mm_v1', JSON.stringify(st)); } catch { /* Storage may be unavailable or contain invalid data; keep the fallback. */ }
   }
   function syncUI() {
     document.querySelectorAll('[data-mode]').forEach(b => {

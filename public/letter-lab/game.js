@@ -193,7 +193,7 @@ try {
     state.guidedMode   = p.guidedMode   || false;
     state.stats        = p.stats        || state.stats;
   }
-} catch(e) {}
+} catch { /* Storage may be unavailable or contain invalid data; keep the fallback. */ }
 
 function saveState() {
   try {
@@ -202,7 +202,7 @@ function saveState() {
       hintsEnabled: state.hintsEnabled, grownup: state.grownup,
       guidedMode: state.guidedMode, stats: state.stats,
     }));
-  } catch(e) {}
+  } catch { /* Storage may be unavailable or contain invalid data; keep the fallback. */ }
 }
 
 // =====================================================================
@@ -226,8 +226,8 @@ function showView(id) {
 // =====================================================================
 //  GROWNUP MODE
 // =====================================================================
-function applyGrownup() {
-  document.body.classList.toggle('grownup', state.grownup);
+function applyLetterLabMode() {
+  applyGrownup(state.grownup);
   const lbl = document.getElementById('grownupLabel');
   const dot = document.getElementById('grownupDot');
   const btn = document.getElementById('grownupToggleBtn');
@@ -463,7 +463,7 @@ function submitGuess() {
       saveState();
       setTimeout(()=>bounceRow(state.guesses.length-1),80);
       setTimeout(()=>showEndScreen(),640);
-      launchConfetti();
+      launchConfetti(state.grownup);
     } else { appendGridRow(state.guesses.length); renderHint(); }
   });
 }
@@ -498,52 +498,6 @@ function showEndScreen() {
   document.getElementById('endOverlay').classList.add('show');
 }
 
-// =====================================================================
-//  CONFETTI
-// =====================================================================
-function launchConfetti() {
-  const kc=['#ff6b6b','#4ecdc4','#ffe66d','#a78bfa','#5cb85c','#f0ad4e','#ff9ff3'];
-  const ac=['#40826D','#52a88e','#e6b830','#8aad9f','#c2ddd5'];
-  const colors=state.grownup?ac:kc, count=state.grownup?28:65;
-  for(let i=0;i<count;i++) setTimeout(()=>{
-    const c=document.createElement('div'); c.className='confetti-piece';
-    const sz=state.grownup?(4+Math.random()*4):(7+Math.random()*7);
-    c.style.cssText=`left:${Math.random()*100}vw;width:${sz}px;height:${sz*1.3}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${state.grownup?'1px':'3px'};transform:rotate(${Math.random()*360}deg);animation-duration:${2+Math.random()*2}s;`;
-    document.body.appendChild(c); setTimeout(()=>c.remove(),4500);
-  },i*(state.grownup?65:32));
-}
-
-// =====================================================================
-//  TOAST
-// =====================================================================
-let toastTimer;
-function showToast(msg) {
-  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
-  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),1800);
-}
-
-// =====================================================================
-//  GATE CHECK
-// =====================================================================
-function closeGate() { document.getElementById('gateOverlay').classList.remove('show'); }
-
-function buildGateButtons() {
-  const container=document.getElementById('gateButtons'); container.innerHTML='';
-  [8,9,10,12,15].sort(()=>Math.random()-0.5).forEach(n=>{
-    const btn=document.createElement('button'); btn.className='abtn ghost';
-    btn.textContent=n; btn.style.cssText='min-width:52px;font-size:1rem;padding:10px 0;';
-    btn.addEventListener('click',()=>{
-      if(n===10){ closeGate(); openAdmin(); }
-      else {
-        const err=document.getElementById('gateError'); err.textContent='Not quite — try again';
-        btn.classList.add('wrong');
-        setTimeout(()=>{ err.textContent=''; btn.classList.remove('wrong'); },1200);
-      }
-    });
-    container.appendChild(btn);
-  });
-}
-function openGate() { buildGateButtons(); document.getElementById('gateError').textContent=''; document.getElementById('gateOverlay').classList.add('show'); }
 document.getElementById('gateOverlay').addEventListener('click',e=>{ if(e.target===document.getElementById('gateOverlay')) closeGate(); });
 document.getElementById('gateCloseBtn').addEventListener('click', closeGate);
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&document.getElementById('gateOverlay').classList.contains('show')) closeGate(); });
@@ -554,7 +508,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&document.getElemen
 function openAdmin() {
   updateAdminCurrentWord(); updateAdminStats();
   document.getElementById('hintsEnabledSelect').value=state.hintsEnabled?'yes':'no';
-  syncLenUI(); applyGrownup(); syncGuidedUI();
+  syncLenUI(); applyLetterLabMode(); syncGuidedUI();
   document.getElementById('adminOverlay').classList.add('show');
 }
 function closeAdmin() { document.getElementById('adminOverlay').classList.remove('show'); }
@@ -772,7 +726,7 @@ document.addEventListener('keydown', e => {
 
 document.getElementById('nextBtn').addEventListener('click', () => { startGame(); showToast('NEW WORD'); });
 document.getElementById('playAgainBtn').addEventListener('click', () => startGame());
-document.getElementById('adminBtn').addEventListener('click', openGate);
+document.getElementById('adminBtn').addEventListener('click', () => openGate(openAdmin, {wrongClass: 'wrong'}));
 document.getElementById('closeAdminBtn').addEventListener('click', closeAdmin);
 document.getElementById('adminOverlay').addEventListener('click', e => { if(e.target===document.getElementById('adminOverlay')) closeAdmin(); });
 document.getElementById('helpBtn').addEventListener('click', () => document.getElementById('helpOverlay').classList.add('show'));
@@ -783,8 +737,8 @@ document.getElementById('endOverlay').addEventListener('click', e => { if(e.targ
 document.querySelectorAll('.len-opt').forEach(btn => {
   btn.addEventListener('click', () => { state.wordLength=parseInt(btn.dataset.len); syncLenUI(); });
 });
-document.getElementById('grownupToggleBtn').addEventListener('click', () => { state.grownup=!state.grownup; applyGrownup(); });
-document.getElementById('guidedToggleBtn').addEventListener('click', () => { state.guidedMode=!state.guidedMode; syncGuidedUI(); applyGrownup(); });
+document.getElementById('grownupToggleBtn').addEventListener('click', () => { state.grownup=!state.grownup; applyLetterLabMode(); });
+document.getElementById('guidedToggleBtn').addEventListener('click', () => { state.guidedMode=!state.guidedMode; syncGuidedUI(); applyLetterLabMode(); });
 document.getElementById('saveSettingsBtn').addEventListener('click', () => {
   state.hintsEnabled=document.getElementById('hintsEnabledSelect').value==='yes';
   saveState(); startGame(); showToast('SETTINGS SAVED'); closeAdmin();
@@ -818,4 +772,4 @@ document.getElementById('resetStatsBtn').addEventListener('click', () => {
 // =====================================================================
 //  BOOT
 // =====================================================================
-applyGrownup(); syncGuidedUI(); syncLenUI(); startGame();
+applyLetterLabMode(); syncGuidedUI(); syncLenUI(); startGame();
