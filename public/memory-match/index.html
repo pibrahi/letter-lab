@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory Match — Matching Pairs Activity for Kids</title>
+<meta name="description" content="Flip cards and find matching pictures, animal words, and big and little letters. Free memory activity for kids aged 2+, with no ads.">
+<meta name="keywords" content="kids memory game, matching pairs game, picture word matching, uppercase lowercase letters, toddler learning game">
+<link rel="canonical" href="https://letterlab.cc/memory-match/">
+<meta property="og:type"        content="website">
+<meta property="og:url"         content="https://letterlab.cc/memory-match/">
+<meta property="og:title"       content="Memory Match — Matching Pairs Activity for Kids">
+<meta property="og:description" content="Flip cards and find matching pictures, animal words, and big and little letters. Free memory activity for kids aged 2+, with no ads.">
+<meta name="twitter:card"        content="summary">
+<meta name="twitter:title"       content="Memory Match — Matching Pairs Activity for Kids">
+<meta name="twitter:description" content="Flip cards and find matching pictures, animal words, and big and little letters. Free memory activity for kids aged 2+, with no ads.">
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="../_shared/lab.css">
+<link rel="stylesheet" href="game.css">
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="admin-overlay" id="gateOverlay">
+  <div class="admin-modal gate-modal">
+    <h2 class="gate-heading">// Grownup Check</h2>
+    <p class="gate-question">2 × 5 = ?</p>
+    <div class="gate-choices" id="gateButtons"></div>
+    <p id="gateError" class="gate-error"></p>
+  </div>
+</div>
+
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-modal" role="dialog" aria-label="Memory Match settings">
+    <h2>// Grownup Settings</h2>
+    <p class="admin-sub">Memory Match settings</p>
+    <div class="admin-section">
+      <h3>Pairs per board</h3>
+      <div class="mode-opts">
+        <button type="button" class="mode-opt" data-pairs="3">3 pairs</button>
+        <button type="button" class="mode-opt" data-pairs="4">4 pairs</button>
+        <button type="button" class="mode-opt" data-pairs="6">6 pairs</button>
+      </div>
+    </div>
+    <div class="admin-section">
+      <h3>Display</h3>
+      <button type="button" class="abtn toggle-row" id="grownupToggleBtn">
+        <span id="grownupDot" class="status-dot"></span>
+        <span id="grownupLabel">Dark mode: OFF</span>
+      </button>
+    </div>
+    <div class="overlay-close"><button type="button" class="abtn ghost" id="closeAdminBtn">Close</button></div>
+  </div>
+</div>
+<div class="view active view-pad">
+  <header>
+    <div class="logo-wrap">
+      <h1 class="logo">🃏 Memory<span>Match</span></h1>
+      <div class="logo-sub" id="modeSub">Picture Pairs</div>
+    </div>
+    <div class="header-controls">
+      <a class="btn-icon home-link" href="../" aria-label="Learning Centre">🏠</a>
+      <button type="button" class="gear-btn" id="adminBtn" aria-label="Grownup settings" title="Grownup"><span class="dot"></span>⚙</button>
+    </div>
+  </header>
+  <main class="game-area">
+    <div class="mode-opts" aria-label="Activity mode">
+      <button type="button" class="mode-opt" data-mode="picture">Picture Pairs (2+)</button>
+      <button type="button" class="mode-opt" data-mode="word">Picture &amp; Word (3+)</button>
+      <button type="button" class="mode-opt" data-mode="letter">Big &amp; Little (3+)</button>
+    </div>
+    <p>Flip two cards and find a pair!</p>
+    <p class="board-stats">Turns: <span id="turns">0</span> · Pairs: <span id="found">0</span>/<span id="totalPairs">3</span></p>
+    <div class="board" id="board" role="group" aria-label="Memory cards"></div>
+    <p class="announcement" id="announcement" aria-live="polite" aria-atomic="true"></p>
+    <section class="win-panel" id="winPanel" hidden>
+      <h2>Board cleared!</h2>
+      <div class="win-stars" id="winStars" role="img" aria-label="Stars"></div>
+      <p id="winTurns"></p>
+      <button type="button" class="btn-primary" id="playAgainBtn">Play again</button>
+    </section>
+    <button type="button" class="btn-next" id="newBoardBtn">New board</button>
+  </main>
+  <footer>Made with 🩵 for L&amp;G</footer>
+</div>
+<script src="../_shared/lab.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
