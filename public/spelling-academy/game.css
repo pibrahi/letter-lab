@@ -25,7 +25,7 @@
   padding: 3px 10px; border-radius: 4px; letter-spacing: 1.5px; text-transform: uppercase;
   background: var(--viridian-bg); color: var(--viridian); border: 1.5px solid var(--viridian);
 }
-.mode-label.villain { background: rgba(185,28,28,0.1); color: #b91c1c; border-color: #b91c1c; }
+.mode-label.villain { background: rgba(185,28,28,0.1); color: var(--danger-hover); border-color: var(--danger-hover); }
 
 /* Letter slots */
 .word-slots { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
@@ -91,21 +91,21 @@
 /* Admin mode opts */
 .mode-opts { display: flex; gap: 8px; }
 .mode-opt {
-  flex: 1; padding: 9px 8px; border-radius: 5px; border: 1px solid #1a2e25;
+  flex: 1; padding: 9px 8px; border-radius: 5px; border: 1px solid var(--admin-border);
   font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
   cursor: pointer; letter-spacing: 0.5px; text-transform: uppercase;
-  background: rgba(255,255,255,0.05); color: #52a88e; transition: all 0.14s; text-align: center;
+  background: var(--admin-ghost-bg); color: var(--admin-accent); transition: all 0.14s; text-align: center;
 }
-.mode-opt.active { background: #40826D; color: #fff; border-color: #40826D; }
+.mode-opt.active { background: var(--brand-viridian); color: var(--on-accent); border-color: var(--brand-viridian); }
 
 .len-opts { display: flex; gap: 8px; flex-wrap: wrap; }
 .len-opt {
-  flex: 1; padding: 8px 4px; border-radius: 5px; border: 1px solid #1a2e25;
+  flex: 1; padding: 8px 4px; border-radius: 5px; border: 1px solid var(--admin-border);
   font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
   cursor: pointer; text-transform: uppercase; text-align: center;
-  background: rgba(255,255,255,0.05); color: #52a88e; transition: all 0.14s;
+  background: var(--admin-ghost-bg); color: var(--admin-accent); transition: all 0.14s;
 }
-.len-opt.active { background: #40826D; color: #fff; border-color: #40826D; }
+.len-opt.active { background: var(--brand-viridian); color: var(--on-accent); border-color: var(--brand-viridian); }
 
 @media print {
   body > *:not(.badge-overlay) { display: none !important; }

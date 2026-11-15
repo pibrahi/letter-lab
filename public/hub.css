@@ -61,13 +61,13 @@ body.grownup .dark-toggle .dot { background: var(--viridian); }
   padding: 2px 6px; border-radius: 3px; letter-spacing: 0.8px; text-transform: uppercase;
   background: rgba(0,0,0,0.05); color: var(--text3); border: 1px solid var(--border);
 }
-body.grownup .card-mode-tag { background: rgba(255,255,255,0.04); border-color: var(--border2); }
+body.grownup .card-mode-tag { background: var(--admin-input-bg); border-color: var(--border2); }
 
-.game-card.c-green:hover  { border-color: #40826D; box-shadow: 0 6px 0 #2d6355; }
+.game-card.c-green:hover  { border-color: var(--brand-viridian); box-shadow: 0 6px 0 var(--brand-viridian-shadow); }
 .game-card.c-green::before { background: rgba(64,130,109,0.07); }
-.game-card.c-red:hover    { border-color: #b91c1c; box-shadow: 0 6px 0 #991b1b; }
+.game-card.c-red:hover    { border-color: var(--danger-hover); box-shadow: 0 6px 0 var(--danger-bg); }
 .game-card.c-red::before  { background: rgba(185,28,28,0.05); }
-.game-card.c-yellow:hover { border-color: #d4a017; box-shadow: 0 6px 0 #a87c0e; }
+.game-card.c-yellow:hover { border-color: var(--brand-gold); box-shadow: 0 6px 0 var(--hint-gold); }
 .game-card.c-yellow::before { background: rgba(212,160,23,0.07); }
 .game-card.c-purple:hover { border-color: #7c3aed; box-shadow: 0 6px 0 #5b21b6; }
 .game-card.c-purple::before { background: rgba(124,58,237,0.05); }

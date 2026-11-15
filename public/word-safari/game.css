@@ -40,7 +40,7 @@
 .word-opt-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
 .word-opt-btn:disabled { opacity: 0.35; pointer-events: none; }
 .word-opt-btn.correct-flash { background: var(--correct); border-color: var(--correct-b); color: var(--correct-txt); box-shadow: 0 4px 0 var(--correct-b); }
-.word-opt-btn.wrong-flash  { background: #fee2e2; border-color: #b91c1c; color: #b91c1c; animation: shake 0.42s ease; }
+.word-opt-btn.wrong-flash  { background: #fee2e2; border-color: var(--danger-hover); color: var(--danger-hover); animation: shake 0.42s ease; }
 
 /* Letter option buttons (First Letter + Spell mode) */
 .letter-options { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
@@ -80,19 +80,19 @@
 .mode-label {
   font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
   padding: 3px 10px; border-radius: 4px; letter-spacing: 1.5px; text-transform: uppercase;
-  background: rgba(212,160,23,0.12); color: #a87c0e; border: 1.5px solid #d4a017;
+  background: rgba(212,160,23,0.12); color: var(--hint-gold); border: 1.5px solid var(--brand-gold);
 }
-body.grownup .mode-label { color: #e6b830; border-color: #e6b830; }
+body.grownup .mode-label { color: var(--hint-gold-bright); border-color: var(--hint-gold-bright); }
 
 /* Admin */
 .mode-opts { display: flex; gap: 6px; flex-wrap: wrap; }
 .mode-opt {
-  flex: 1; min-width: 80px; padding: 9px 6px; border-radius: 5px; border: 1px solid #1a2e25;
+  flex: 1; min-width: 80px; padding: 9px 6px; border-radius: 5px; border: 1px solid var(--admin-border);
   font-family: var(--font-mono); font-size: 0.65rem; font-weight: 700; cursor: pointer;
   letter-spacing: 0.3px; text-transform: uppercase; text-align: center;
-  background: rgba(255,255,255,0.05); color: #52a88e; transition: all 0.14s;
+  background: var(--admin-ghost-bg); color: var(--admin-accent); transition: all 0.14s;
 }
-.mode-opt.active { background: #40826D; color: #fff; border-color: #40826D; }
+.mode-opt.active { background: var(--brand-viridian); color: var(--on-accent); border-color: var(--brand-viridian); }
 
 @media (max-width: 400px) {
   .animal-emoji { font-size: 5.5rem; }
