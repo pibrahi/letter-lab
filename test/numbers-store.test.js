@@ -27,3 +27,20 @@ test('NumberLab storage validates, resets, round-trips and only writes its recor
     store.reset();
   } finally { global.localStorage = old; }
 });
+test('NumberLab storage migrates the legacy little tier key to G mode', () => {
+  const old = global.localStorage;
+  const data = new Map();
+  global.localStorage = {getItem:key => data.get(key) ?? null, setItem:(key, value) => data.set(key, value)};
+  try {
+    const legacy = {version:1, startTier:'little', floorTier:'little', grownup:false,
+      skills:{counting:{tier:'little', streak:1, recent:[true], hintLevel:0, answered:1, correct:1}}};
+    data.set('nl_v1', JSON.stringify(legacy));
+    const state = store.load();
+    assert.equal(state.startTier, 0); assert.equal(state.floorTier, 0);
+    assert.deepEqual(state.skills.counting, {tier:0, streak:1, recent:[true], hintLevel:0, answered:1, correct:1});
+    data.set('nl_v1', JSON.stringify({...legacy, startTier:'builder', floorTier:'little', skills:{counting:{...legacy.skills.counting, tier:'builder'}}}));
+    assert.equal(store.load().startTier, 2); assert.equal(store.load().skills.counting.tier, 2);
+    store.save(store.load());
+    assert.equal(typeof JSON.parse(data.get('nl_v1')).startTier, 'number');
+  } finally { global.localStorage = old; }
+});

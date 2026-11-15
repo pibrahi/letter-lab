@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const {TIERS, SKILLS, paramsFor, tierById, clampTier} = require('../public/numbers/engine/levels.js');
 test('NumberLab tiers and all skill parameters are ordered and monotone', () => {
   assert.deepEqual(TIERS.map(t => t.id), [0,1,2,3,4,5]);
-  assert.deepEqual(TIERS.map(t => t.key), ['little','explorer','builder','inventor','master','genius']);
+  assert.deepEqual(TIERS.map(t => t.key), ['gmode','explorer','builder','inventor','master','genius']);
   assert.equal(new Set(TIERS.map(t => t.key)).size, 6);
   assert.ok(TIERS[0].maxNumber <= 10);
   for (const skill of SKILLS) {
@@ -27,4 +27,12 @@ test('NumberLab rejects skills, clamps tiers and returns independent parameters'
   assert.deepEqual(paramsFor('counting', 99), paramsFor('counting', 5));
   paramsFor('counting', 0).skipBy.push(99);
   assert.deepEqual(paramsFor('counting', 0).skipBy, [1]);
+});
+test('NumberLab lowest tier is labelled G mode and tier keys map to ids', () => {
+  assert.equal(TIERS[0].label, 'G mode');
+  assert.equal(tierById(0).label, 'G mode');
+  TIERS.forEach(t => assert.equal(clampTier(t.key), t.id));
+  assert.equal(clampTier('little'), 0);
+  assert.equal(clampTier(' Little '), 0);
+  assert.equal(clampTier('unknown'), 0);
 });

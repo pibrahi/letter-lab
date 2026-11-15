@@ -1,7 +1,7 @@
 (function () {
   const root = typeof window !== 'undefined' ? window : globalThis;
   const TIERS = [
-    {id:0, key:'little', label:'Little', icon:'🌱', maxNumber:5, summary:'Picture-based counting and comparing up to 5.'},
+    {id:0, key:'gmode', label:'G mode', icon:'🌱', maxNumber:5, summary:'Picture-based counting and comparing up to 5.'},
     {id:1, key:'explorer', label:'Explorer', icon:'🧭', maxNumber:10, summary:'Numbers to 10, adding and taking away.'},
     {id:2, key:'builder', label:'Builder', icon:'🧱', maxNumber:20, summary:'Number bonds and missing numbers to 20.'},
     {id:3, key:'inventor', label:'Inventor', icon:'💡', maxNumber:100, summary:'Two-digit numbers and place value.'},
@@ -15,7 +15,16 @@
     {key:'sequencing', label:'Sequencing', slug:'number-train', icon:'🚂'},
     {key:'comparing', label:'Comparing', slug:'who-has-more', icon:'⚖️'},
   ];
-  function clampTier(tier) { return Number.isFinite(tier) ? Math.max(0, Math.min(5, Math.trunc(tier))) : 0; }
+  // Older saves or links may name a tier by key; 'little' was the first name of G mode.
+  const TIER_ALIASES = {little:0};
+  function clampTier(tier) {
+    if (typeof tier === 'string') {
+      const key = tier.trim().toLowerCase();
+      const match = TIERS.find(t => t.key === key);
+      return match ? match.id : (TIER_ALIASES[key] ?? 0);
+    }
+    return Number.isFinite(tier) ? Math.max(0, Math.min(5, Math.trunc(tier))) : 0;
+  }
   function tierById(tier) { return TIERS[clampTier(tier)]; }
   const params = {};
   TIERS.forEach(({id, maxNumber}) => {

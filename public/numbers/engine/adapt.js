@@ -20,7 +20,7 @@
   }
   function suggestStartTier(answers) {
     // A full pass needs at least two correct in the last three at a tier.
-    // Start at Little; accept passed tiers in order only within one tier of
+    // Start at G mode; accept passed tiers in order only within one tier of
     // the last accepted pass. A gap never allows a jump over an unpassed tier.
     let result = 0;
     for (let tier = 0; tier <= 5; tier++) {

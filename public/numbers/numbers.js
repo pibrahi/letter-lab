@@ -7,7 +7,7 @@
     const tier = levels.tierById(state.startTier);
     el('difficultyPill').textContent = `${tier.icon} ${tier.label}`;
     document.querySelectorAll('[data-tier]').forEach(b => b.setAttribute('aria-pressed', Number(b.dataset.tier) === state.startTier));
-    el('floorLittle').setAttribute('aria-pressed', state.floorTier === 0);
+    el('floorLowest').setAttribute('aria-pressed', state.floorTier === 0);
     el('floorChosen').setAttribute('aria-pressed', state.floorTier === state.startTier && state.startTier > 0);
     el('progressRows').replaceChildren();
     levels.SKILLS.forEach(skill => {
@@ -56,7 +56,7 @@
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     }
   });
-  el('floorLittle').addEventListener('click', () => { state.floorTier = 0; save(); });
+  el('floorLowest').addEventListener('click', () => { state.floorTier = 0; save(); });
   el('floorChosen').addEventListener('click', () => {
     state.floorTier = state.startTier;
     levels.SKILLS.forEach(({key}) => {

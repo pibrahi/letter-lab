@@ -11,7 +11,8 @@
     state.floorTier = Math.min(state.startTier, clampTier(value.floorTier));
     state.grownup = value.grownup === true;
     SKILLS.forEach(({key}) => {
-      const s = value.skills?.[key];
+      const saved = value.skills?.[key];
+      const s = saved && typeof saved.tier === 'string' ? {...saved, tier:clampTier(saved.tier)} : saved;
       const validCount = n => Number.isSafeInteger(n) && n >= 0;
       state.skills[key] = s && Number.isInteger(s.tier) && s.tier >= state.floorTier && s.tier <= 5 &&
         validCount(s.streak) && validCount(s.answered) && validCount(s.correct) && s.correct <= s.answered && s.streak <= s.correct &&
