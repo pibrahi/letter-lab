@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+npm run lint
+npm test
+
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks git --no-banner --redact .
+else
+  echo "Note: gitleaks is not installed; skipping the local secret scan."
+fi

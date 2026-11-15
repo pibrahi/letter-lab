@@ -3,10 +3,18 @@
   "private": true,
   "description": "Word learning activities for kids, served as static assets on a Cloudflare Worker.",
   "scripts": {
-    "test": "node --test test/site.test.js test/memory-match.test.js",
-    "preview": "wrangler versions upload"
+    "test": "node --test test/*.test.js",
+    "preview": "wrangler versions upload",
+    "lint": "eslint . && stylelint \"public/**/*.css\"",
+    "check": "npm run lint && npm test",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "eslint": "10.15.0",
+    "globals": "17.14.0",
+    "stylelint": "18.0.0",
+    "stylelint-config-standard": "41.0.0",
     "wrangler": "4.162.0"
   }
 }
