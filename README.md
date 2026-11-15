@@ -106,7 +106,7 @@ letter-lab/
 │   │   ├── numbers.css
 │   │   ├── numbers.js
 │   │   ├── favicon.svg
-│   │   ├── engine/          # levels.js, adapt.js, store.js, counting.js
+│   │   ├── engine/          # levels.js, adapt.js, store.js, counting.js, addition.js
 │   │   └── games/           # One folder per game (see docs/numberlab-games.md)
 │   ├── privacy/
 │   │   └── index.html       # Privacy policy
@@ -144,7 +144,7 @@ Classic browser scripts load shared helpers before each game's script. `public/_
 
 ## NumberLab
 
-`/numbers/` offers Dino Egg Rescue, a silent visual counting game with five-challenge rounds, tap and drag egg rescue, place-value building, sequences, gentle explanations, and adaptive difficulty. Four more cards are coming soon. The home has grownup-gated difficulty and minimum-tier settings, progress rows, reset confirmation, and synced dark mode. Games will live in `public/numbers/games/<slug>/` with `index.html`, `game.css`, and `game.js`.
+`/numbers/` offers Dino Egg Rescue, a silent visual counting game with five-challenge rounds, tap and drag egg rescue, place-value building, sequences, gentle explanations, and adaptive difficulty. Rocket Fuel adds silent visual addition, fuel loading, number bonds, place-value building, and mental maths through the pure addition engine. Three more cards are coming soon. The home has grownup-gated difficulty and minimum-tier settings, progress rows, reset confirmation, and synced dark mode. Games live in `public/numbers/games/<slug>/` with `index.html`, `game.css`, and `game.js` (see `docs/numberlab-games.md`).
 
 The classic scripts in `public/numbers/engine/` also support CommonJS. `NumberLab.levels` exposes `TIERS`, `SKILLS`, `paramsFor(skill, tier)`, `tierById(tier)`, and `clampTier(tier)`. The six tiers are G mode (0, internal key `gmode`), Explorer (1), Builder (2), Inventor (3), Master (4), and Genius Lab (5). Unknown skills throw; invalid tiers default to G mode, numeric tiers clamp to 0–5, and tier keys (plus the legacy key `little`) map to their ids.
 
