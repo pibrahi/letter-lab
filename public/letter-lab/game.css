@@ -11,7 +11,7 @@
 .abtn.danger:hover { background: var(--danger-bg); }
 .abtn.ghost:hover { background: var(--admin-ghost-bg); }
 @media (hover: hover) {
-  .abtn.primary:hover { background: var(--admin-accent); }
+  .abtn.primary:hover { background: var(--admin-accent); color: var(--admin-bg); }
   .abtn.danger:hover { background: var(--danger-hover); }
   .abtn.ghost:hover { background: var(--admin-hover-bg); }
 }
@@ -21,7 +21,7 @@
   --empty: var(--surface); --empty-b: var(--border);
 }
 body.grownup {
-  --absent: #2e3d36; --absent-b: #1e2920; --absent-txt: #7a9b8c;
+  --absent: #2e3d36; --absent-b: #1e2920; --absent-txt: #a4c2b4;
   --empty: var(--surface); --empty-b: var(--border);
 }
 .view.active { display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
@@ -42,10 +42,10 @@ body.grownup {
 body.grownup .hint-bar { color: var(--viridian-lt); }
 .hint-tag {
   font-family: var(--font-mono); font-size: 0.6rem; font-weight: 700;
-  letter-spacing: 1.5px; text-transform: uppercase; color: var(--on-accent);
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--button-text);
   background: var(--viridian); border-radius: 3px; padding: 2px 6px; white-space: nowrap; flex-shrink: 0;
 }
-.hint-tag.locked { background: var(--border2); }
+.hint-tag.locked { background: var(--text3); color: var(--bg); }
 .hint-locked-text { color: var(--text3); font-style: italic; font-weight: 400; }
 @keyframes hintReveal { from { opacity:0; transform:translateX(-5px); } to { opacity:1; transform:translateX(0); } }
 .hint-bar.revealed { animation: hintReveal 0.3s ease forwards; }
@@ -133,10 +133,10 @@ body.grownup .hint-bar { color: var(--viridian-lt); }
   color: var(--text2); cursor: pointer; letter-spacing: 0.5px;
   transition: all var(--transition);
 }
-.filter-btn:hover, .filter-btn.active { background: var(--viridian); border-color: var(--viridian-dk); color: var(--on-accent); }
+.filter-btn:hover, .filter-btn.active { background: var(--viridian); border-color: var(--viridian-dk); color: var(--button-text); }
 .editor-add-btn {
   padding: 9px 18px; border-radius: var(--radius);
-  border: 2px solid var(--viridian-dk); background: var(--viridian); color: var(--on-accent);
+  border: 2px solid var(--viridian-dk); background: var(--viridian); color: var(--button-text);
   font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700;
   cursor: pointer; letter-spacing: 0.5px; box-shadow: 0 3px 0 var(--viridian-dk);
   transition: all var(--transition); white-space: nowrap;
@@ -333,3 +333,5 @@ body.grownup .hint-level.l3 { color: var(--viridian-lt); }
 
 /* Wins over component display rules until script sets style.display. */
 .is-hidden { display: none; }
+
+body.grownup .wc-btn.del:hover { color: #fca5a5; border-color: #fca5a5; }

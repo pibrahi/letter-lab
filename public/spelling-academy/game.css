@@ -117,3 +117,5 @@
   .choice-btn { width: 58px; height: 58px; font-size: 1.7rem; }
   .word-emoji { font-size: 4.5rem; }
 }
+
+body.grownup .mode-label.villain { color: #fca5a5; border-color: #fca5a5; }

@@ -23,8 +23,8 @@
 <div class="admin-overlay" id="gateOverlay">
   <div class="admin-modal gate-modal">
     <h2 class="gate-heading">// Grownup Check</h2>
-    <p class="gate-question">2 × 5 = ?</p>
-    <div class="gate-choices" id="gateButtons"></div>
+    <p class="gate-question" id="gateQuestion" aria-live="polite">2 × 5 = ?</p>
+    <div class="gate-choices" id="gateButtons" role="group" aria-label="Answer choices"></div>
     <p id="gateError" class="gate-error"></p>
   </div>
 </div>
@@ -64,11 +64,11 @@
   </header>
   <main class="game-area">
     <div class="mode-opts" aria-label="Activity mode">
-      <button type="button" class="mode-opt" data-mode="picture">Picture Pairs (2+)</button>
-      <button type="button" class="mode-opt" data-mode="word">Picture &amp; Word (3+)</button>
-      <button type="button" class="mode-opt" data-mode="letter">Big &amp; Little (3+)</button>
+      <button type="button" class="mode-opt" data-mode="picture" aria-label="Picture Pairs (2+)">Picture Pairs<span class="mode-age"> (2+)</span></button>
+      <button type="button" class="mode-opt" data-mode="word" aria-label="Picture &amp; Word (3+)">Picture &amp; Word<span class="mode-age"> (3+)</span></button>
+      <button type="button" class="mode-opt" data-mode="letter" aria-label="Big &amp; Little (3+)">Big &amp; Little<span class="mode-age"> (3+)</span></button>
     </div>
-    <p>Flip two cards and find a pair!</p>
+    <p class="instructions">Flip two cards and find a pair!</p>
     <p class="board-stats">Turns: <span id="turns">0</span> · Pairs: <span id="found">0</span>/<span id="totalPairs">3</span></p>
     <div class="board" id="board" role="group" aria-label="Memory cards"></div>
     <p class="announcement" id="announcement" aria-live="polite" aria-atomic="true"></p>

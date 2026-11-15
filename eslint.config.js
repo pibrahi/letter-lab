@@ -34,7 +34,7 @@ module.exports = [
     rules: { 'no-unused-vars': ['error', { vars: 'local' }] },
   },
   {
-    files: ['public/memory-match/game.js', 'public/_shared/words.js'],
+    files: ['public/memory-match/game.js', 'public/_shared/words.js', 'public/_shared/lab.js'],
     languageOptions: { globals: { module: 'readonly', require: 'readonly' } },
   },
   {
