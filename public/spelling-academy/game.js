@@ -226,7 +226,6 @@ document.getElementById('grownupToggleBtn').addEventListener('click', () => { st
 document.querySelectorAll('.mode-opt').forEach(b => b.addEventListener('click', () => { st.mode = b.dataset.mode; syncAdminUI(); }));
 document.querySelectorAll('.len-opt').forEach(b => b.addEventListener('click', () => { st.wordLen = parseInt(b.dataset.len); syncAdminUI(); }));
 document.getElementById('skipBtn').addEventListener('click', () => { st.locked = false; startRound(); });
-document.getElementById('printBadgeBtn').addEventListener('click', () => window.print());
 document.getElementById('keepPlayingBtn').addEventListener('click', () => { document.getElementById('badgeOverlay').classList.remove('show'); startRound(); });
 
 // ── BOOT ──────────────────────────────────────────────────

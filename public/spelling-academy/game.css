@@ -107,11 +107,6 @@
 }
 .len-opt.active { background: var(--brand-viridian); color: var(--on-accent); border-color: var(--brand-viridian); }
 
-@media print {
-  body > *:not(.badge-overlay) { display: none !important; }
-  .badge-overlay { display: flex !important; position: static; background: none; backdrop-filter: none; }
-  .badge-btn-row { display: none !important; }
-}
 @media (max-width: 400px) {
   .letter-slot { width: 48px; height: 56px; font-size: 1.6rem; }
   .choice-btn { width: 58px; height: 58px; font-size: 1.7rem; }

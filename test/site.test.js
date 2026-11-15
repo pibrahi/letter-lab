@@ -35,6 +35,16 @@ function headerBlock(text) {
   return block.join("\n");
 }
 
+test("Spelling Academy has no badge printing feature", () => {
+  for (const file of walk(path.join(root, "public/spelling-academy"))) {
+    const content = fs.readFileSync(file, "utf8");
+    for (const needle of ["window.print", "printBadgeBtn", "@media print"]) {
+      assert.equal(content.includes(needle), false, `${path.relative(root, file)} contains ${needle}`);
+    }
+  }
+  assert.doesNotMatch(read("public/index.html"), /<span\b[^>]*class="card-mode-tag"[^>]*>\s*Hero Badge\s*<\/span>/);
+});
+
 test("security headers cover every path", () => {
   const headers = read("public/_headers");
   const block = headerBlock(headers);
