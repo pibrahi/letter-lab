@@ -4,8 +4,13 @@
   const el = id => document.getElementById(id);
   let resetTimer, resetArmed = false;
   function render() {
-    const tier = levels.tierById(state.startTier);
-    el('difficultyPill').textContent = `${tier.icon} ${tier.label}`;
+    // The pill is the grownup's starting setting; each card chip is that game's adapted level.
+    el('difficultyPill').textContent = `Start: ${levels.levelLabel(state.startTier)}`;
+    document.querySelectorAll('[data-skill-level]').forEach(chip => {
+      const skill = state.skills[chip.dataset.skillLevel];
+      chip.textContent = skill ? levels.levelLabel(skill.tier) : '';
+      chip.hidden = !skill;
+    });
     document.querySelectorAll('[data-tier]').forEach(b => b.setAttribute('aria-pressed', Number(b.dataset.tier) === state.startTier));
     el('floorLowest').setAttribute('aria-pressed', state.floorTier === 0);
     el('floorChosen').setAttribute('aria-pressed', state.floorTier === state.startTier && state.startTier > 0);
@@ -56,6 +61,8 @@
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     }
   });
+  // Coming back from a game (including the back/forward cache) shows the new level.
+  window.addEventListener('pageshow', e => { if (e.persisted) { state = store.load(); render(); } });
   el('floorLowest').addEventListener('click', () => { state.floorTier = 0; save(); });
   el('floorChosen').addEventListener('click', () => {
     state.floorTier = state.startTier;

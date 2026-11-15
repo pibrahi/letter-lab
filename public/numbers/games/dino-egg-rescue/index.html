@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dino Egg Rescue — NumberLab</title>
+<meta name="description" content="A silent, visual dinosaur egg counting game with six adaptive levels.">
+<link rel="canonical" href="https://letterlab.cc/numbers/games/dino-egg-rescue/">
+<link rel="icon" href="../../favicon.svg">
+<link rel="stylesheet" href="../../../_shared/lab.css">
+<link rel="stylesheet" href="game.css">
+</head>
+<body>
+<main class="game">
+<header>
+<a class="icon" href="../../" aria-label="Back to NumberLab">🏠</a>
+<div class="level" id="level"></div>
+<button class="icon" id="help" aria-label="Replay visual demonstration">❔</button>
+<div class="stars" aria-label="Round stars"><span id="star0">★</span><span id="star1">★</span><span id="star2">★</span><span id="star3">★</span><span id="star4">★</span></div>
+</header>
+<section id="play" aria-label="Egg rescue challenge">
+<div id="sign" class="sign"></div>
+<div id="nest" class="nest"></div>
+<div id="pile" class="pile"></div>
+<div id="actions" class="actions"></div>
+</section>
+<section id="end" hidden aria-label="Round complete">
+<div id="parade" class="parade"></div>
+<div class="actions"><button id="again" class="icon" aria-label="Play again">🔁</button><a class="icon" href="../../" aria-label="Back to NumberLab">🏠</a></div>
+</section>
+<div id="demo" hidden aria-hidden="true">👆</div>
+<p id="status" class="sr" aria-live="polite"></p>
+</main>
+<script src="../../../_shared/lab.js"></script>
+<script src="../../engine/levels.js"></script>
+<script src="../../engine/adapt.js"></script>
+<script src="../../engine/store.js"></script>
+<script src="../../engine/counting.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

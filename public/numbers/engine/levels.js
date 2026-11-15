@@ -41,7 +41,8 @@
     // Return fresh data so a game cannot alter another game's settings.
     return JSON.parse(JSON.stringify(params[clampTier(tier)][skill]));
   }
-  const api = {TIERS, SKILLS, paramsFor, tierById, clampTier};
+  function levelLabel(tier) { const t = tierById(tier); return `${t.icon} ${t.label}`; }
+  const api = {TIERS, SKILLS, paramsFor, tierById, clampTier, levelLabel};
   root.NumberLab = root.NumberLab || {};
   root.NumberLab.levels = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

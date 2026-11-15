@@ -106,8 +106,8 @@ letter-lab/
 │   │   ├── numbers.css
 │   │   ├── numbers.js
 │   │   ├── favicon.svg
-│   │   ├── engine/          # levels.js, adapt.js, store.js
-│   │   └── games/README.md  # Future game layout
+│   │   ├── engine/          # levels.js, adapt.js, store.js, counting.js
+│   │   └── games/README.md  # Game layout
 │   ├── privacy/
 │   │   └── index.html       # Privacy policy
 │   ├── index.html           # Hub / Learning Centre
@@ -143,7 +143,7 @@ Classic browser scripts load shared helpers before each game's script. `public/_
 
 ## NumberLab
 
-Step 1 adds `/numbers/`: a visual home with five disabled coming-soon cards, grownup-gated difficulty and minimum-tier settings, progress rows, reset confirmation, and synced dark mode. Games will live in `public/numbers/games/<slug>/` with `index.html`, `game.css`, and `game.js`.
+`/numbers/` offers Dino Egg Rescue, a silent visual counting game with five-challenge rounds, tap and drag egg rescue, place-value building, sequences, gentle explanations, and adaptive difficulty. Four more cards are coming soon. The home has grownup-gated difficulty and minimum-tier settings, progress rows, reset confirmation, and synced dark mode. Games will live in `public/numbers/games/<slug>/` with `index.html`, `game.css`, and `game.js`.
 
 The classic scripts in `public/numbers/engine/` also support CommonJS. `NumberLab.levels` exposes `TIERS`, `SKILLS`, `paramsFor(skill, tier)`, `tierById(tier)`, and `clampTier(tier)`. The six tiers are G mode (0, internal key `gmode`), Explorer (1), Builder (2), Inventor (3), Master (4), and Genius Lab (5). Unknown skills throw; invalid tiers default to G mode, numeric tiers clamp to 0–5, and tier keys (plus the legacy key `little`) map to their ids.
 
