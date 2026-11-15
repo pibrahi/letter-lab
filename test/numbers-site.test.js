@@ -50,3 +50,13 @@ test('NumberLab home shows the start setting and each playable game its own leve
   assert.equal(levelLabel(0), '🌱 G mode');
   assert.match(read('numbers/numbers.js'), /`Start: \$\{levels\.levelLabel\(state\.startTier\)\}`/);
 });
+test('public/ holds only servable files (no markdown docs)', () => {
+  const found = [];
+  (function walk(dir) {
+    for (const entry of fs.readdirSync(dir, {withFileTypes:true})) {
+      const file = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(file); else if (/\.md$/i.test(entry.name)) found.push(path.relative(root, file));
+    }
+  })(root);
+  assert.deepEqual(found, []);
+});

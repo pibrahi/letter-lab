@@ -1,0 +1,3 @@
+# NumberLab games
+
+Games live in `public/numbers/games/<slug>/`. Dino Egg Rescue lives in `dino-egg-rescue/` with `index.html`, `game.css`, and `game.js`. It uses the pure counting engine, shared tier definitions, adaptation, and the single `nl_v1` progress record. Play five silent visual challenges per round, from counting eggs to regrouping tens. The other four games remain coming soon.

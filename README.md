@@ -107,7 +107,7 @@ letter-lab/
 │   │   ├── numbers.js
 │   │   ├── favicon.svg
 │   │   ├── engine/          # levels.js, adapt.js, store.js, counting.js
-│   │   └── games/README.md  # Game layout
+│   │   └── games/           # One folder per game (see docs/numberlab-games.md)
 │   ├── privacy/
 │   │   └── index.html       # Privacy policy
 │   ├── index.html           # Hub / Learning Centre
@@ -122,6 +122,7 @@ letter-lab/
 ├── .githooks/pre-push       # Local lint, tests, optional gitleaks scan
 ├── eslint.config.js         # Browser scripts and Node test lint settings
 ├── .stylelintrc.json         # CSS correctness checks; preserves compact style
+├── docs/numberlab-games.md  # NumberLab game folder layout (kept out of public/)
 ├── test/                    # node:test checks (no test dependencies)
 │   ├── site.test.js
 │   ├── memory-match.test.js
