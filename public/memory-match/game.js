@@ -73,6 +73,29 @@ if (typeof document !== 'undefined') {
     button.setAttribute('aria-disabled', matched.has(i));
     button.setAttribute('aria-label', `Card ${i + 1}, ${up ? deck[i].label : 'face down'}${matched.has(i) ? ', matched' : ''}`);
   }
+  const gameView = document.querySelector('.view');
+  function closeWin(returnFocus = true) {
+    el('winPanel').hidden = true;
+    gameView.inert = false;
+    if (returnFocus) el('newBoardBtn').focus();
+  }
+  function openWin() {
+    el('winPanel').hidden = false;
+    gameView.inert = true;
+    el('playAgainBtn').focus();
+  }
+  el('closeWinBtn').addEventListener('click', () => closeWin());
+  el('winPanel').addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeWin();
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      const first = el('playAgainBtn');
+      const last = el('closeWinBtn');
+      (document.activeElement === first ? last : document.activeElement === last ? first : e.shiftKey ? last : first).focus();
+    }
+  });
   function reveal(i) {
     if (revealed.length === 2 || matched.has(i) || revealed.includes(i)) return;
     revealed.push(i);
@@ -94,10 +117,9 @@ if (typeof document !== 'undefined') {
         el('winStars').textContent = '⭐'.repeat(stars);
         el('winStars').setAttribute('aria-label', `${stars} stars`);
         el('winTurns').textContent = `You found all ${st.pairs} pairs in ${turns} turns!`;
-        el('winPanel').hidden = false;
+        openWin();
         el('announcement').textContent = `Board cleared! ${stars} stars in ${turns} turns.`;
         launchConfetti(st.grownup);
-        el('playAgainBtn').focus();
       }
       save();
     } else {
@@ -115,8 +137,10 @@ if (typeof document !== 'undefined') {
     el('turns').textContent = '0'; el('found').textContent = '0';
     el('totalPairs').textContent = st.pairs;
     el('modeSub').textContent = MODES[st.mode];
-    el('winPanel').hidden = true;
+    closeWin(false);
     el('announcement').textContent = 'New board. Find the matching pairs!';
+    el('board').classList.remove('pairs-3', 'pairs-4', 'pairs-6');
+    el('board').classList.add(`pairs-${st.pairs}`);
     el('board').replaceChildren();
     buttons = deck.map((card, i) => {
       const button = document.createElement('button');

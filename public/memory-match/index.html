@@ -72,16 +72,21 @@
     <p class="board-stats">Turns: <span id="turns">0</span> · Pairs: <span id="found">0</span>/<span id="totalPairs">3</span></p>
     <div class="board" id="board" role="group" aria-label="Memory cards"></div>
     <p class="announcement" id="announcement" aria-live="polite" aria-atomic="true"></p>
-    <section class="win-panel" id="winPanel" hidden>
-      <h2>Board cleared!</h2>
-      <div class="win-stars" id="winStars" role="img" aria-label="Stars"></div>
-      <p id="winTurns"></p>
-      <button type="button" class="btn-primary" id="playAgainBtn">Play again</button>
-    </section>
     <button type="button" class="btn-next" id="newBoardBtn">New board</button>
   </main>
   <footer>Made with 🩵 for L&amp;G</footer>
 </div>
+<section class="win-panel" id="winPanel" role="dialog" aria-modal="true" aria-labelledby="winHeading" hidden>
+  <div class="win-card">
+    <h2 id="winHeading">Board cleared!</h2>
+    <div class="win-stars" id="winStars" role="img" aria-label="Stars"></div>
+    <p id="winTurns"></p>
+    <div class="win-actions">
+      <button type="button" class="btn-primary" id="playAgainBtn">Play again</button>
+      <button type="button" class="btn-next" id="closeWinBtn">Close</button>
+    </div>
+  </div>
+</section>
 <script src="../_shared/lab.js"></script>
 <script src="game.js"></script>
 </body>
