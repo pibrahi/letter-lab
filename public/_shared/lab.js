@@ -36,18 +36,59 @@ function closeGate() {
   document.getElementById('gateOverlay').classList.remove('show');
 }
 
+// Choose from a finite pool so even a constant RNG cannot stall on reopening.
+const gatePool = [];
+for (let a = 2; a <= 9; a++) {
+  for (let b = 2; b <= 9; b++) {
+    if (a !== 2 || b !== 2) gatePool.push({text: `${a} × ${b} = ?`, answer: a * b});
+  }
+}
+for (let a = 4; a <= 9; a++) {
+  for (let b = 4; b <= 9; b++) {
+    if (a + b >= 10) gatePool.push({text: `${a} + ${b} = ?`, answer: a + b});
+  }
+}
+function gateQuestionFrom(pool, rng) {
+  const {text, answer} = pool[Math.floor(rng() * pool.length)];
+  // Distractors at random offsets (up to ±6) so the answer isn't always the middle value.
+  const offsets = [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6].filter(d => answer + d > 0);
+  for (let i = offsets.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [offsets[i], offsets[j]] = [offsets[j], offsets[i]];
+  }
+  const choices = [answer, ...offsets.slice(0, 4).map(d => answer + d)];
+  for (let i = choices.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [choices[i], choices[j]] = [choices[j], choices[i]];
+  }
+  return {text, answer, choices};
+}
+function makeGateQuestion(rng = Math.random) {
+  return gateQuestionFrom(gatePool, rng);
+}
+let lastGateQuestion;
+function nextGateQuestion(rng = Math.random) {
+  const question = gateQuestionFrom(gatePool.filter(q => q.text !== lastGateQuestion), rng);
+  lastGateQuestion = question.text;
+  return question;
+}
+
 function openGate(onSuccess, options = {}) {
   const container = document.getElementById('gateButtons');
   const err = document.getElementById('gateError');
   err.textContent = '';
   container.innerHTML = '';
-  [8, 9, 10, 12, 15].sort(() => Math.random() - 0.5).forEach(n => {
+  const question = nextGateQuestion();
+  document.getElementById('gateQuestion').textContent = question.text;
+  container.setAttribute('role', 'group');
+  container.setAttribute('aria-label', 'Answer choices');
+  question.choices.forEach(n => {
     const btn = document.createElement('button');
     btn.className = 'abtn ghost';
     btn.textContent = n;
     btn.style.cssText = 'min-width:52px;font-size:1rem;padding:10px 0;';
     btn.addEventListener('click', () => {
-      if (n === 10) {
+      if (n === question.answer) {
         closeGate();
         onSuccess();
       } else {
@@ -96,3 +137,5 @@ function renderStars(progress) {
     }
   }
 }
+
+if (typeof module !== 'undefined' && module.exports) module.exports = { makeGateQuestion, nextGateQuestion };

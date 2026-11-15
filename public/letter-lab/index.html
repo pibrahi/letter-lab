@@ -128,8 +128,8 @@
     <button id="gateCloseBtn" class="gate-close" title="Cancel">✕</button>
     <h2 class="gate-heading-lab">// Grownup Mode</h2>
     <p class="gate-question-lab">Quick check before we continue</p>
-    <div class="gate-sum">2 × 5 = ?</div>
-    <div class="gate-choices-lab" id="gateButtons"></div>
+    <div class="gate-sum" id="gateQuestion" aria-live="polite">2 × 5 = ?</div>
+    <div class="gate-choices-lab" id="gateButtons" role="group" aria-label="Answer choices"></div>
     <p id="gateError" class="gate-error-lab"></p>
   </div>
 </div>
