@@ -33,7 +33,8 @@ test('Dino Egg Rescue has safe markup, ordered scripts and five stars', () => {
   assert.match(home, /▶ Play/);
   const html = read('numbers/games/dino-egg-rescue/index.html');
   assert.doesNotMatch(html, /<style[\s>]|\sstyle\s*=|\son\w+\s*=|<script(?![^>]*\bsrc=)/i);
-  assert.deepEqual([...html.matchAll(/<script src="([^"]+)"/g)].map(m => m[1]), ['../../../_shared/lab.js','../../engine/levels.js','../../engine/adapt.js','../../engine/store.js','../../engine/counting.js','game.js']);
+  assert.deepEqual([...html.matchAll(/<script src="([^"]+)"/g)].map(m => m[1]), ['../../../_shared/lab.js','../../engine/levels.js','../../engine/adapt.js','../../engine/store.js','../../engine/counting.js','../shared/simple-game.js','game.js']);
+  assert.doesNotMatch(html, /❔|👆|id="(?:help|demo)"/);
   for (let i = 0; i < 5; i++) assert.ok(html.includes(`id="star${i}"`));
   assert.match(read('sitemap.xml'), /<loc>https:\/\/letterlab.cc\/numbers\/games\/dino-egg-rescue\/<\/loc>/);
 });
@@ -67,8 +68,20 @@ test('Rocket Fuel has safe markup, ordered scripts and five stars', () => {
   assert.match(home, /<a class="game-card card-1" href="games\/rocket-fuel\/">/);
   const html = read('numbers/games/rocket-fuel/index.html');
   assert.doesNotMatch(html, /<style[\s>]|\sstyle\s*=|\son\w+\s*=|<script(?![^>]*\bsrc=)/i);
-  assert.deepEqual([...html.matchAll(/<script src="([^"]+)"/g)].map(m => m[1]), ['../../../_shared/lab.js','../../engine/levels.js','../../engine/adapt.js','../../engine/store.js','../../engine/counting.js','../../engine/addition.js','game.js']);
+  assert.deepEqual([...html.matchAll(/<script src="([^"]+)"/g)].map(m => m[1]), ['../../../_shared/lab.js','../../engine/levels.js','../../engine/adapt.js','../../engine/store.js','../../engine/counting.js','../../engine/addition.js','../shared/simple-game.js','game.js']);
+  assert.doesNotMatch(html, /❔|👆|id="(?:help|demo)"/);
   for (let i = 0; i < 5; i++) assert.ok(html.includes(`id="star${i}"`));
   assert.match(read('sitemap.xml'), /<loc>https:\/\/letterlab.cc\/numbers\/games\/rocket-fuel\/<\/loc>/);
   assert.match(html, /href="https:\/\/letterlab.cc\/numbers\/games\/rocket-fuel\/"/);
+});
+
+test('NumberLab has no drag or pointer handling', () => {
+  function walk(dir) {
+    for (const entry of fs.readdirSync(dir, {withFileTypes:true})) {
+      const file = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(file);
+      else if (/\.(js|html|css)$/.test(file)) assert.doesNotMatch(fs.readFileSync(file, 'utf8'), /pointerdown|pointermove|pointerup|setPointerCapture|touchstart|touchmove|touchend|dragstart|dragover|drop\b|draggable/i, file);
+    }
+  }
+  walk(path.join(root, 'numbers'));
 });
