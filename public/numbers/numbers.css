@@ -47,3 +47,5 @@ a.game-card { text-decoration: none; cursor: pointer; transition: transform 0.15
 a.game-card:hover, a.game-card:focus-visible { border-color: var(--viridian-text); transform: translateY(-3px); outline: 3px solid var(--viridian-text); outline-offset: 3px; }
 a.game-card:active { transform: translateY(2px); }
 .play-badge { padding: 8px 16px; border-radius: 8px; background: var(--viridian); color: var(--button-text); font-weight: 700; }
+.level-chip { padding: 4px 10px; border-radius: 14px; border: 1px solid var(--viridian-text); background: var(--viridian-bg); color: var(--viridian-text); font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; }
+.level-chip[hidden] { display: none; }

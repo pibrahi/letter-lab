@@ -37,3 +37,16 @@ test('Dino Egg Rescue has safe markup, ordered scripts and five stars', () => {
   for (let i = 0; i < 5; i++) assert.ok(html.includes(`id="star${i}"`));
   assert.match(read('sitemap.xml'), /<loc>https:\/\/letterlab.cc\/numbers\/games\/dino-egg-rescue\/<\/loc>/);
 });
+test('NumberLab home shows the start setting and each playable game its own level', () => {
+  const {SKILLS, levelLabel, TIERS} = require('../public/numbers/engine/levels.js');
+  const html = read('numbers/index.html');
+  const chips = [...html.matchAll(/data-skill-level="([^"]+)"/g)].map(m => m[1]);
+  assert.deepEqual(chips, ['counting']);
+  chips.forEach(key => assert.ok(SKILLS.some(s => s.key === key)));
+  const playable = [...html.matchAll(/<a class="game-card[\s\S]*?<\/a>/g)].map(m => m[0]);
+  assert.equal(playable.length, 1); assert.match(playable[0], /data-skill-level="counting"/);
+  assert.doesNotMatch(html.replace(playable[0], ''), /level-chip/);
+  TIERS.forEach(t => assert.equal(levelLabel(t.id), `${t.icon} ${t.label}`));
+  assert.equal(levelLabel(0), '🌱 G mode');
+  assert.match(read('numbers/numbers.js'), /`Start: \$\{levels\.levelLabel\(state\.startTier\)\}`/);
+});
