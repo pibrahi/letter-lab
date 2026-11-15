@@ -1,0 +1,1 @@
+Each future game will live in `games/<slug>/` with `index.html`, `game.css`, and `game.js`, and use the shared `engine/` tier definitions, adaptation functions, and single progress record. The five games will be built in later steps.

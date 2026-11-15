@@ -30,6 +30,11 @@
       "@type": "WebApplication",
       "name": "Puzzle Words",
       "url": "https://letterlab.cc/puzzle-words/"
+    },
+    {
+      "@type": "WebApplication",
+      "name": "NumberLab",
+      "url": "https://letterlab.cc/numbers/"
     }
   ]
 };
@@ -46,7 +51,7 @@ function applyDark() {
   applyGrownup(grownup);
   document.getElementById('darkLabel').textContent = grownup ? 'Light Mode' : 'Dark Mode';
   try {
-    ['sa_v1','ws_v1','pw_v1','mm_v1'].forEach(key => {
+    ['sa_v1','ws_v1','pw_v1','mm_v1','nl_v1'].forEach(key => {
       const s = JSON.parse(localStorage.getItem(key) || '{}');
       s.grownup = grownup;
       localStorage.setItem(key, JSON.stringify(s));

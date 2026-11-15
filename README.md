@@ -101,6 +101,13 @@ letter-lab/
 │   │   ├── game.css
 │   │   ├── game.js
 │   │   └── favicon.svg
+│   ├── numbers/
+│   │   ├── index.html       # NumberLab home
+│   │   ├── numbers.css
+│   │   ├── numbers.js
+│   │   ├── favicon.svg
+│   │   ├── engine/          # levels.js, adapt.js, store.js
+│   │   └── games/README.md  # Future game layout
 │   ├── privacy/
 │   │   └── index.html       # Privacy policy
 │   ├── index.html           # Hub / Learning Centre
@@ -133,6 +140,16 @@ Classic browser scripts load shared helpers before each game's script. `public/_
 `public/_shared/lab.css` defines shared components and design tokens. Themed tokens such as `--bg`, `--surface`, `--text`, `--border`, `--viridian`, `--correct`, and `--present` change under `body.grownup`. Fixed tokens such as `--brand-viridian`, `--admin-accent`, `--on-accent`, and `--error` retain their colours for chrome and accents; typography, radii, and transition tokens are fixed too.
 
 `public/_shared/words.js` exposes the frozen `LAB_WORDS` emoji bank and per-game word lists. `pick(listName)` returns fresh word/emoji objects: Memory Match uses `memoryAnimals`, Word Safari uses `safariAnimals`, Spelling Academy uses `spellingWords`, and Puzzle Words uses `tileWords`. Letter Lab keeps its own words and progressive hints; Puzzle Words keeps its sentence and rhyme data locally. Memory Match and the word bank also support CommonJS for tests.
+
+## NumberLab
+
+Step 1 adds `/numbers/`: a visual home with five disabled coming-soon cards, grownup-gated difficulty and minimum-tier settings, progress rows, reset confirmation, and synced dark mode. Games will live in `public/numbers/games/<slug>/` with `index.html`, `game.css`, and `game.js`.
+
+The classic scripts in `public/numbers/engine/` also support CommonJS. `NumberLab.levels` exposes `TIERS`, `SKILLS`, `paramsFor(skill, tier)`, `tierById(tier)`, and `clampTier(tier)`. The six tiers are G mode (0, internal key `gmode`), Explorer (1), Builder (2), Inventor (3), Master (4), and Genius Lab (5). Unknown skills throw; invalid tiers default to G mode, numeric tiers clamp to 0–5, and tier keys (plus the legacy key `little`) map to their ids.
+
+`NumberLab.adapt` provides `initialSkillState(tier)`, immutable `recordAnswer(state, correct, {floor})` returning `{state, event}`, and `suggestStartTier(answers)`. Counters are lifetime totals; recent answers reset when a tier changes. Assessment uses the last three answers per tier, requires two correct, and accepts passed tiers in ascending order only up to one tier beyond the last accepted pass (starting at G mode). `NumberLab.store` provides `load()`, `save(state)`, `setStartTier(state, tier)` (resets all skills), and `reset()` (all defaults). It validates the single `nl_v1` record and falls back to memory when storage is unavailable. The controller writes the shared `lab_dark` preference. The progress reset button keeps the chosen difficulty, floor, and theme.
+
+NumberLab uses no audio, no profiles, and no names. Instructions are visual and all progress stays on this device.
 
 ## Development
 
@@ -168,7 +185,7 @@ Configure `main` to require a pull request and the `check` status to pass before
 npm test
 ```
 
-The checks are plain `node:test`. They cover site configuration and assets, Memory Match logic, the shared word bank, and tooling safeguards. The shell expands `test/*.test.js` to all four test files on Node 24. They do not contact Cloudflare.
+The checks are plain `node:test`. They cover site configuration and assets, Memory Match logic, the shared word bank, and tooling safeguards. The shell expands `test/*.test.js` to all test files on Node 24. They do not contact Cloudflare.
 
 To look at the site with those headers applied, serve it the way the Worker does:
 

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NumberLab — Maths Centre for Kids</title>
+<meta name="description" content="Counting, adding and number games. Six adaptive difficulty tiers. Five visual maths games coming soon.">
+<meta name="keywords" content="kids maths, counting, addition, number games">
+<link rel="canonical" href="https://letterlab.cc/numbers/">
+<meta property="og:type"        content="website">
+<meta property="og:url"         content="https://letterlab.cc/numbers/">
+<meta property="og:title"       content="NumberLab — Maths Centre for Kids">
+<meta property="og:description" content="Counting, adding and number games. Six adaptive difficulty tiers. Five visual maths games coming soon.">
+<meta name="twitter:card"        content="summary">
+<meta name="twitter:title"       content="NumberLab — Maths Centre for Kids">
+<meta name="twitter:description" content="Counting, adding and number games. Six adaptive difficulty tiers. Five visual maths games coming soon.">
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="../_shared/lab.css">
+<link rel="stylesheet" href="numbers.css">
+</head>
+<body>
+<div class="toast" id="toast" role="status"></div>
+<div class="admin-overlay" id="gateOverlay">
+  <div class="admin-modal gate-modal">
+    <h2 class="gate-heading">// Grownup Check</h2>
+    <p class="gate-question" id="gateQuestion" aria-live="polite">2 × 5 = ?</p>
+    <div class="gate-choices" id="gateButtons" role="group" aria-label="Answer choices"></div>
+    <p id="gateError" class="gate-error"></p>
+    <div class="overlay-close"><button type="button" class="abtn ghost" id="gateCancelBtn">Cancel</button></div>
+  </div>
+</div>
+
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-modal" role="dialog" aria-modal="true" aria-label="NumberLab settings">
+    <h2>// Grownup Settings</h2>
+    <p class="admin-sub">NumberLab settings</p>
+    <section class="admin-section">
+      <h3>Difficulty</h3>
+      <div id="tierButtons" class="tier-grid"></div>
+      <p class="adapt-note">Adapts automatically</p>
+      <h3>Lowest level</h3>
+      <div class="floor-options">
+        <button type="button" class="abtn ghost" id="floorLowest">Can go down to G mode</button>
+        <button type="button" class="abtn ghost" id="floorChosen">Stay at chosen level or above</button>
+      </div>
+    </section>
+    <section class="admin-section">
+      <h3>Progress</h3>
+      <div id="progressRows"></div>
+      <button type="button" class="abtn danger" id="resetBtn">Reset progress</button>
+    </section>
+    <section class="admin-section">
+      <h3>Display</h3>
+      <button type="button" class="abtn toggle-row" id="grownupToggleBtn">
+        <span id="grownupDot" class="status-dot"></span><span id="grownupLabel">Dark mode: OFF</span>
+      </button>
+    </section>
+    <div class="overlay-close"><button type="button" class="abtn ghost" id="closeAdminBtn">Close</button></div>
+  </div>
+</div>
+<div class="numbers-view" id="homeView">
+  <header>
+    <div><h1 class="hub-logo">Number<span>Lab</span></h1><div class="hub-logo-sub">Maths Centre</div></div>
+    <div class="header-controls">
+      <a class="btn-icon home-link" href="../" aria-label="Letter Lab hub">🏠</a>
+      <button type="button" class="gear-btn" id="adminBtn" aria-label="Grownup settings"><span class="dot"></span>⚙</button>
+    </div>
+  </header>
+  <main>
+    <p class="visual-tagline"><span aria-hidden="true">🔢 ➜ 🎮</span><span class="visually-hidden">Choose a game</span></p>
+    <p class="difficulty-pill" id="difficultyPill"></p>
+    <div class="game-grid">
+      <div class="game-card is-soon card-0" aria-disabled="true">
+        <span class="card-icon" aria-hidden="true">🦕</span>
+        <h2>Dino Egg Rescue</h2><p>Find and count the dinosaur eggs.</p>
+        <span class="skill-tag">Counting</span><span class="soon-badge">⏳ Coming soon</span>
+      </div>
+      <div class="game-card is-soon card-1" aria-disabled="true">
+        <span class="card-icon" aria-hidden="true">🚀</span>
+        <h2>Rocket Fuel</h2><p>Add numbers to power a rocket.</p>
+        <span class="skill-tag">Addition</span><span class="soon-badge">⏳ Coming soon</span>
+      </div>
+      <div class="game-card is-soon card-2" aria-disabled="true">
+        <span class="card-icon" aria-hidden="true">👾</span>
+        <h2>Monster Munch</h2><p>Take away snacks for a hungry monster.</p>
+        <span class="skill-tag">Subtraction</span><span class="soon-badge">⏳ Coming soon</span>
+      </div>
+      <div class="game-card is-soon card-3" aria-disabled="true">
+        <span class="card-icon" aria-hidden="true">🚂</span>
+        <h2>Number Train</h2><p>Put the numbers in order.</p>
+        <span class="skill-tag">Sequencing</span><span class="soon-badge">⏳ Coming soon</span>
+      </div>
+      <div class="game-card is-soon card-4" aria-disabled="true">
+        <span class="card-icon" aria-hidden="true">⚖️</span>
+        <h2>Who Has More?</h2><p>Compare groups and numbers.</p>
+        <span class="skill-tag">Comparing</span><span class="soon-badge">⏳ Coming soon</span>
+      </div>
+    </div>
+  </main>
+  <footer><a href="../">Letter Lab hub</a> · <a href="../privacy/">Privacy</a></footer>
+</div>
+<script src="../_shared/lab.js"></script>
+<script src="engine/levels.js"></script>
+<script src="engine/adapt.js"></script>
+<script src="engine/store.js"></script>
+<script src="numbers.js"></script>
+</body>
+</html>
