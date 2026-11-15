@@ -24,21 +24,7 @@
   document.head.appendChild(el);
 })();
 
-const WORDS = [
-  {w:'CAT',e:'🐱'},{w:'DOG',e:'🐶'},{w:'HEN',e:'🐔'},{w:'PIG',e:'🐷'},
-  {w:'BEE',e:'🐝'},{w:'FOX',e:'🦊'},{w:'OWL',e:'🦉'},{w:'COW',e:'🐮'},
-  {w:'ANT',e:'🐜'},{w:'BUG',e:'🐛'},{w:'SUN',e:'☀️'},{w:'HAT',e:'🎩'},
-  {w:'CUP',e:'☕'},{w:'BAG',e:'👜'},{w:'BUS',e:'🚌'},{w:'CAR',e:'🚗'},
-  {w:'NET',e:'🥅'},{w:'POT',e:'🪴'},{w:'BOX',e:'📦'},{w:'MAP',e:'🗺️'},
-  {w:'BEAR',e:'🐻'},{w:'BIRD',e:'🐦'},{w:'CRAB',e:'🦀'},{w:'DUCK',e:'🦆'},
-  {w:'FISH',e:'🐟'},{w:'FROG',e:'🐸'},{w:'LAMB',e:'🐑'},{w:'LION',e:'🦁'},
-  {w:'WOLF',e:'🐺'},{w:'WORM',e:'🪱'},{w:'BOOK',e:'📚'},{w:'CAKE',e:'🎂'},
-  {w:'STAR',e:'⭐'},{w:'MOON',e:'🌙'},{w:'RAIN',e:'🌧️'},{w:'SNOW',e:'❄️'},
-  {w:'TIGER',e:'🐯'},{w:'HORSE',e:'🐴'},{w:'SHARK',e:'🦈'},{w:'WHALE',e:'🐋'},
-  {w:'SNAKE',e:'🐍'},{w:'EAGLE',e:'🦅'},{w:'PANDA',e:'🐼'},{w:'KOALA',e:'🐨'},
-  {w:'OTTER',e:'🦦'},{w:'LLAMA',e:'🦙'},{w:'APPLE',e:'🍎'},{w:'GRAPE',e:'🍇'},
-  {w:'LEMON',e:'🍋'},{w:'PIZZA',e:'🍕'},{w:'TRAIN',e:'🚂'},{w:'PLANT',e:'🌿'},
-];
+const WORDS = LAB_WORDS.pick('spellingWords');
 
 const st = {
   mode: 'fix', wordLen: 0, grownup: false,
@@ -53,10 +39,10 @@ try {
   if (s.grownup) st.grownup = s.grownup;
   if (s.wordsCorrect) st.wordsCorrect = s.wordsCorrect;
   if (s.badgeCount) st.badgeCount = s.badgeCount;
-} catch(e) {}
+} catch { /* Storage may be unavailable or contain invalid data; keep the fallback. */ }
 
 function save() {
-  try { localStorage.setItem('sa_v1', JSON.stringify({mode:st.mode,wordLen:st.wordLen,grownup:st.grownup,wordsCorrect:st.wordsCorrect,badgeCount:st.badgeCount})); } catch(e) {}
+  try { localStorage.setItem('sa_v1', JSON.stringify({mode:st.mode,wordLen:st.wordLen,grownup:st.grownup,wordsCorrect:st.wordsCorrect,badgeCount:st.badgeCount})); } catch { /* Storage may be unavailable or contain invalid data; keep the fallback. */ }
 }
 
 function pool() {

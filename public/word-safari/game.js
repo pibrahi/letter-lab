@@ -24,16 +24,7 @@
   document.head.appendChild(el);
 })();
 
-const ANIMALS = [
-  {w:'CAT',e:'🐱'},{w:'DOG',e:'🐶'},{w:'COW',e:'🐮'},{w:'PIG',e:'🐷'},
-  {w:'HEN',e:'🐔'},{w:'FOX',e:'🦊'},{w:'OWL',e:'🦉'},{w:'BEE',e:'🐝'},
-  {w:'ANT',e:'🐜'},{w:'DUCK',e:'🦆'},{w:'FROG',e:'🐸'},{w:'BEAR',e:'🐻'},
-  {w:'FISH',e:'🐟'},{w:'CRAB',e:'🦀'},{w:'LAMB',e:'🐑'},{w:'LION',e:'🦁'},
-  {w:'WOLF',e:'🐺'},{w:'BIRD',e:'🐦'},{w:'WORM',e:'🪱'},{w:'DEER',e:'🦌'},
-  {w:'TIGER',e:'🐯'},{w:'HORSE',e:'🐴'},{w:'SHARK',e:'🦈'},{w:'WHALE',e:'🐋'},
-  {w:'SNAKE',e:'🐍'},{w:'EAGLE',e:'🦅'},{w:'PANDA',e:'🐼'},{w:'KOALA',e:'🐨'},
-  {w:'OTTER',e:'🦦'},{w:'LLAMA',e:'🦙'},{w:'ZEBRA',e:'🦓'},{w:'RHINO',e:'🦏'},
-];
+const ANIMALS = LAB_WORDS.pick('safariAnimals');
 
 const st = {
   mode: 'match', grownup: false,
@@ -47,10 +38,10 @@ try {
   if (s.grownup) st.grownup = s.grownup;
   if (s.correct) st.correct = s.correct;
   if (s.streak)  st.streak  = s.streak;
-} catch(e) {}
+} catch { /* Storage may be unavailable or contain invalid data; keep the fallback. */ }
 
 function save() {
-  try { localStorage.setItem('ws_v1', JSON.stringify({mode:st.mode,grownup:st.grownup,correct:st.correct,streak:st.streak})); } catch(e) {}
+  try { localStorage.setItem('ws_v1', JSON.stringify({mode:st.mode,grownup:st.grownup,correct:st.correct,streak:st.streak})); } catch { /* Storage may be unavailable or contain invalid data; keep the fallback. */ }
 }
 
 function pick(exclude) {
