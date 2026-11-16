@@ -8,27 +8,24 @@
 <link rel="canonical" href="https://letterlab.cc/numbers/games/rocket-fuel/">
 <link rel="icon" href="../../favicon.svg">
 <link rel="stylesheet" href="../../../_shared/lab.css">
+<link rel="stylesheet" href="../shared/simple-game.css">
 <link rel="stylesheet" href="game.css">
 </head>
 <body>
 <main class="game">
 <header>
-<a class="icon" href="../../" aria-label="Back to NumberLab">🏠</a>
+<a class="home" href="../../" aria-label="Back to NumberLab">🏠</a>
 <div class="level" id="level"></div>
-<button class="icon" id="help" aria-label="Replay visual demonstration">❔</button>
 <div class="stars" aria-label="Round stars"><span id="star0">★</span><span id="star1">★</span><span id="star2">★</span><span id="star3">★</span><span id="star4">★</span></div>
 </header>
-<section id="play" aria-label="Rocket fuel challenge">
-<div id="sign" class="sign"></div>
-<div class="launchpad"><div id="rocket" aria-hidden="true">🚀</div><div id="tank" class="tank"></div></div>
-<div id="bay" class="bay"></div>
+<section id="play" aria-label="Question">
+<div id="picture" class="picture"></div>
 <div id="actions" class="actions"></div>
 </section>
 <section id="end" hidden aria-label="Round complete">
-<div id="planets" class="planets"></div>
-<div class="actions"><button id="again" class="icon" aria-label="Play again">🔁</button><a class="icon" href="../../" aria-label="Back to NumberLab">🏠</a></div>
+<div id="parade" class="parade"></div>
+<div class="actions"><button type="button" id="again" class="end-button" aria-label="Play again">🔁</button><a class="end-button" href="../../" aria-label="Back to NumberLab">🏠</a></div>
 </section>
-<div id="demo" hidden aria-hidden="true">👆</div>
 <p id="status" class="sr" aria-live="polite"></p>
 </main>
 <script src="../../../_shared/lab.js"></script>
@@ -37,6 +34,7 @@
 <script src="../../engine/store.js"></script>
 <script src="../../engine/counting.js"></script>
 <script src="../../engine/addition.js"></script>
+<script src="../shared/simple-game.js"></script>
 <script src="game.js"></script>
 </body>
 </html>

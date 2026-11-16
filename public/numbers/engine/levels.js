@@ -4,9 +4,9 @@
     {id:0, key:'gmode', label:'G mode', icon:'🌱', maxNumber:5, summary:'Picture-based counting and comparing up to 5.'},
     {id:1, key:'explorer', label:'Explorer', icon:'🧭', maxNumber:10, summary:'Numbers to 10, adding and taking away.'},
     {id:2, key:'builder', label:'Builder', icon:'🧱', maxNumber:20, summary:'Number bonds and missing numbers to 20.'},
-    {id:3, key:'inventor', label:'Inventor', icon:'💡', maxNumber:100, summary:'Two-digit numbers and place value.'},
-    {id:4, key:'master', label:'Master', icon:'⭐', maxNumber:100, summary:'Mental maths, groups and patterns.'},
-    {id:5, key:'genius', label:'Genius Lab', icon:'🧪', maxNumber:100, summary:'Multi-step puzzles, logic and early fractions.'},
+    {id:3, key:'inventor', label:'Inventor', icon:'💡', maxNumber:100, summary:'Two-digit numbers, sums and sequences.'},
+    {id:4, key:'master', label:'Master', icon:'⭐', maxNumber:100, summary:'Bigger sums and skip-counting patterns.'},
+    {id:5, key:'genius', label:'Genius Lab', icon:'🧪', maxNumber:100, summary:'Tricky sums and number sequences.'},
   ];
   const SKILLS = [
     {key:'counting', label:'Counting', slug:'dino-egg-rescue', icon:'🦕'},

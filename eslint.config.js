@@ -3,7 +3,7 @@ const globals = require('globals');
 
 module.exports = [
   { files: ['public/numbers/engine/*.js'], languageOptions: { globals: { module: 'readonly', require: 'readonly' } } },
-  { files: ['public/numbers/numbers.js', 'public/numbers/games/*/game.js'], languageOptions: { globals: { NumberLab: 'readonly' } } },
+  { files: ['public/numbers/numbers.js', 'public/numbers/games/*/*.js'], languageOptions: { globals: { NumberLab: 'readonly' } } },
   { ignores: ['node_modules/**', '.wrangler/**', 'public/fonts/**'] },
   js.configs.recommended,
   {

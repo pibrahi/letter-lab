@@ -1,7 +1,7 @@
 (function () {
   const root = typeof window !== 'undefined' ? window : globalThis;
   const {clampTier, tierById} = root.NumberLab?.levels || require('./levels.js');
-  const types = [['fill','count'], ['fill','count'], ['count','fill','missing'], ['build','tensCount','missing'], ['skip','build','tensCount'], ['regroup','toNextTen','pattern']];
+  const types = [['count','more'], ['count','more'], ['count','more','missing'], ['missing','more'], ['missing','more'], ['missing','more']];
   function makeChallenge(tier, rng = Math.random, opts = {}) {
     tier = clampTier(tier);
     const int = (min, max) => min + Math.floor(rng() * (max - min + 1));
@@ -12,34 +12,35 @@
       }
       return list;
     };
-    const type = pick(types[tier].filter(t => t !== opts.avoidType));
+    const max = tierById(tier).maxNumber;
+    const available = types[tier].filter(t => t !== opts.avoidType);
+    const type = pick(available.length ? available : types[tier]);
     const c = {type, tier, answer:0};
-    if (type === 'fill' || type === 'count') {
-      c.answer = int(tier === 2 ? 6 : 1, tierById(tier).maxNumber);
-      if (type === 'fill') { c.target = c.answer; c.pile = c.answer + int(2, 4); }
-      else c.eggs = c.answer;
-    } else if (type === 'build') {
-      c.target = c.answer = int(11, 99);
-    } else if (type === 'tensCount' || type === 'regroup') {
-      c.crates = int(1, type === 'regroup' ? 8 : 9);
-      c.loose = type === 'regroup' ? int(10, 19) : int(0, 9);
-      c.answer = c.crates * 10 + c.loose;
-    } else if (type === 'toNextTen') {
-      c.eggs = int(1, 9) * 10 + int(1, 9); c.answer = 10 - c.eggs % 10;
+    if (type === 'count') {
+      c.count = c.answer = int(tier === 2 ? 6 : 1, max);
+    } else if (type === 'more') {
+      const min = [1,1,2,10,10,10][tier];
+      c.left = int(min, tier === 5 ? 99 : max);
+      let candidates = Array.from({length:max - min + 1}, (_, i) => i + min).filter(n => n !== c.left);
+      if (tier === 4) candidates = candidates.filter(n => Math.abs(n - c.left) <= 10);
+      if (tier === 5) {
+        const swapped = c.left % 10 * 10 + Math.floor(c.left / 10);
+        candidates = candidates.filter(n => n <= 99 && (Math.abs(n - c.left) <= 3 || n === swapped) && n !== c.left);
+      }
+      c.right = pick(candidates); c.answer = Math.max(c.left, c.right);
+      c.choices = [c.left, c.right];
     } else {
-      const length = type === 'missing' ? 4 : 5;
-      c.step = type === 'skip' ? pick([2,5,10]) : type === 'pattern' ? pick([3,4,5,6,7,8,9,11]) : 1;
-      const maxStart = tierById(tier).maxNumber - (length - 1) * c.step;
-      const start = type === 'skip' ? int(0, Math.floor(maxStart / c.step)) * c.step : int(1, Math.min(type === 'pattern' ? 20 : maxStart, maxStart));
-      c.sequence = Array.from({length}, (_, i) => start + i * c.step);
-      c.blankIndex = int(0, length - 1); c.answer = c.sequence[c.blankIndex];
+      c.step = tier <= 3 ? 1 : tier === 4 ? pick([2,5,10]) : pick([3,4,5,6,7,8,9,-1,-2,-5,-10]);
+      const span = Math.abs(c.step) * 3;
+      const min = tier <= 3 ? 1 : 0;
+      const start = tier === 4 ? int(0, Math.floor((max - span) / c.step)) * c.step : int(min, max - span);
+      c.sequence = Array.from({length:4}, (_, i) => start + (c.step < 0 ? span : 0) + i * c.step);
+      c.blankIndex = int(0, 3); c.answer = c.sequence[c.blankIndex];
     }
-    if (type !== 'fill' && type !== 'build') {
-      // Keep distractors inside what the tier can show (G mode never sees 15).
-      const min = type === 'count' || type === 'toNextTen' ? 1 : 0;
-      const max = type === 'toNextTen' ? 9 : Math.min(tierById(tier).maxNumber, type === 'tensCount' || type === 'regroup' ? 99 : 100);
-      const offsets = shuffle([1,-1,c.step || 10,-(c.step || 10),10,-10,2,-2]);
-      const candidates = [...new Set(offsets.map(d => c.answer + d).filter(n => n >= min && n <= max && n !== c.answer))];
+    if (!c.choices) {
+      const min = c.sequence && c.sequence.includes(0) ? 0 : 1;
+      const swapped = c.answer % 10 * 10 + Math.floor(c.answer / 10);
+      const candidates = shuffle([...new Set([c.answer - 1, c.answer + 1, c.answer - 2, c.answer + 2, c.answer - 10, c.answer + 10, swapped])].filter(n => n >= min && n <= max && n !== c.answer));
       c.choices = shuffle([c.answer, ...candidates.slice(0, opts.hintLevel >= 1 ? 1 : 2)]);
     }
     return c;

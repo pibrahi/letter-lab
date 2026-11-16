@@ -144,7 +144,9 @@ Classic browser scripts load shared helpers before each game's script. `public/_
 
 ## NumberLab
 
-`/numbers/` offers Dino Egg Rescue, a silent visual counting game with five-challenge rounds, tap and drag egg rescue, place-value building, sequences, gentle explanations, and adaptive difficulty. Rocket Fuel adds silent visual addition, fuel loading, number bonds, place-value building, and mental maths through the pure addition engine. Three more cards are coming soon. The home has grownup-gated difficulty and minimum-tier settings, progress rows, reset confirmation, and synced dark mode. Games live in `public/numbers/games/<slug>/` with `index.html`, `game.css`, and `game.js` (see `docs/numberlab-games.md`).
+`/numbers/` offers Dino Egg Rescue and Rocket Fuel: five silent questions per round, each with one big picture or equation and two or three big number buttons. Correct answers earn stars and a quick hatch or rocket launch; a wrong answer gently highlights the right choice before automatically continuing. Counting, comparing, sequences, addition and missing numbers get harder across six adaptive levels. Three more cards are coming soon. The home keeps per-game level chips, grownup-gated difficulty and minimum-tier settings, progress rows, reset confirmation, and synced dark mode.
+
+Both games use `public/numbers/games/shared/simple-game.js` and `simple-game.css`. The runner draws questions, records first answers, saves progress, and handles five-question rounds, rewards and replay. Each game folder keeps its HTML, tiny configuration script and theme CSS (see `docs/numberlab-games.md`).
 
 The classic scripts in `public/numbers/engine/` also support CommonJS. `NumberLab.levels` exposes `TIERS`, `SKILLS`, `paramsFor(skill, tier)`, `tierById(tier)`, and `clampTier(tier)`. The six tiers are G mode (0, internal key `gmode`), Explorer (1), Builder (2), Inventor (3), Master (4), and Genius Lab (5). Unknown skills throw; invalid tiers default to G mode, numeric tiers clamp to 0–5, and tier keys (plus the legacy key `little`) map to their ids.
 
