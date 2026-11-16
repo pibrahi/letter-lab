@@ -85,3 +85,12 @@ test('NumberLab has no drag or pointer handling', () => {
   }
   walk(path.join(root, 'numbers'));
 });
+
+test('compare accents use shared theme tokens and an aria-hidden scale cue', () => {
+  const js = read('numbers/games/shared/simple-game.js');
+  const css = read('numbers/games/shared/simple-game.css');
+  assert.match(js, /'compare-cue', '⚖'/);
+  assert.match(js, /cue.setAttribute\('aria-hidden', 'true'\)/);
+  for (const name of ['a','b']) assert.ok(css.includes(`.choice.compare-${name}`));
+  for (const token of ['viridian-text','viridian-bg','present','present-txt']) assert.ok(css.includes(`var(--${token})`));
+});

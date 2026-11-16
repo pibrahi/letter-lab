@@ -9,3 +9,7 @@ Rounds contain five questions. Only the first answer is recorded. Correct answer
 Scripts load in order: shared lab helpers, levels, adaptation, store, counting, addition for Rocket only, shared runner, game configuration. Styles load lab.css, shared runner CSS, then theme CSS. All are external to preserve the strict CSP.
 
 The pure deterministic counting engine offers count, more and four-number missing sequences. The addition engine offers two-addend sums and missing addends, keeping five Builder fact kinds with no consecutive kind repeats. Every challenge has distinct bounded number choices. Both games adapt independently using the validated `nl_v1` record. No audio, names or accounts are used. The remaining three games stay coming soon.
+
+Compare questions link the first group and answer in viridian and the second in gold, including numeral groups. A small, aria-hidden scale cues comparison. Paired pictures use up to three columns with items sized to the available group width; the header, sequences and equations also fit narrow phones.
+
+`test/numbers-layout.test.js` uses puppeteer-core and Chrome (`CHROME_PATH` or `/usr/bin/google-chrome`) with a local static server. It checks all six tiers in both games at 320, 375, 390, 430 and 1280px, in both colour themes, using fixed worst cases and 20 seeded real challenges per tier. It checks every visible element’s bounds and picture descendants’ internal overflow, including clipping hidden by body overflow. Missing Chrome skips locally and fails in CI.

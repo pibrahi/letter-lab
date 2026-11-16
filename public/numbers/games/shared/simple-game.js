@@ -10,9 +10,12 @@
       const n = document.createElement(tag); n.className = cls; n.textContent = text; return n;
     }
     // Fewer items are drawn bigger so small counts fill the picture.
-    function group(amount, cls = '', size = amount) {
+    function group(amount, cls = '', size = amount, paired = false) {
       const g = node('div', `items ${cls} ${size <= 5 ? 'size-s' : size <= 10 ? 'size-m' : 'size-l'}`);
-      g.style.gridTemplateColumns = `repeat(${Math.max(1, Math.min(amount, 5))}, auto)`;
+      // Paired groups share one column count so both sides draw items the same size.
+      const columns = Math.max(1, paired ? Math.min(size, 3) : Math.min(amount, 5));
+      g.style.gridTemplateColumns = `repeat(${columns}, minmax(0, 1fr))`;
+      g.style.setProperty('--columns', columns);
       for (let i = 0; i < amount; i++) g.append(node('span', 'item', item));
       return g;
     }
@@ -25,8 +28,12 @@
       } else if (c.type === 'more') {
         label = `Which is more, ${c.left} or ${c.right}?`;
         const row = node('div', 'comparison');
-        [c.left, c.right].forEach(n => row.append(n <= 10 ? group(n, '', Math.max(c.left, c.right)) : node('div', 'equation', n)));
-        scene.append(row);
+        [c.left, c.right].forEach((n, i) => {
+          const cls = `compare-${i === 0 ? 'a' : 'b'}`;
+          row.append(n <= 10 ? group(n, cls, Math.max(c.left, c.right), true) : node('div', `equation ${cls}`, n));
+        });
+        const cue = node('div', 'compare-cue', '⚖'); cue.setAttribute('aria-hidden', 'true');
+        scene.append(cue, row);
       } else if (c.sequence) {
         const row = node('div', 'sequence');
         c.sequence.forEach((n, i) => row.append(node('span', i === c.blankIndex ? 'blank' : '', i === c.blankIndex ? '?' : n)));
@@ -38,7 +45,7 @@
         if (small) {
           const row = node('div', 'sum');
           const size = c.type === 'add' ? c.answer : c.total;
-          row.append(group(c.a, 'color-a', size), node('span', 'operator', '+'), group(c.type === 'add' ? c.b : c.answer, c.type === 'add' ? 'color-b' : 'empty', size));
+          row.append(group(c.a, 'color-a', size, true), node('span', 'operator', '+'), group(c.type === 'add' ? c.b : c.answer, c.type === 'add' ? 'color-b' : 'empty', size, true));
           scene.append(row);
           if (c.type === 'missing') scene.append(node('div', 'equation', `${c.a} + ? = ${c.total}`));
         } else scene.append(node('div', 'equation', c.type === 'add' ? `${c.a} + ${c.b}` : `${c.a} + ? = ${c.total}`));
@@ -55,8 +62,10 @@
       submitted = false;
       el('level').textContent = levels.levelLabel(s.tier);
       picture(); el('actions').replaceChildren();
-      challenge.choices.forEach(value => {
+      const choices = challenge.type === 'more' ? [challenge.left, challenge.right] : challenge.choices;
+      choices.forEach((value, index) => {
         const b = node('button', 'choice', value); b.type = 'button';
+        if (challenge.type === 'more') b.classList.add(index === 0 ? 'compare-a' : 'compare-b');
         b.dataset.value = value; b.setAttribute('aria-label', `Answer ${value}`);
         if (s.tier <= 1 && value <= 10) {
           const dots = node('span', 'dots'); dots.setAttribute('aria-hidden', 'true');
