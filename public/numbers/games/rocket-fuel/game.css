@@ -3,3 +3,5 @@
 .size-m .item { width: clamp(22px, 6vw, 32px); height: clamp(32px, 9vw, 46px); }
 .color-b .item { background: var(--present); border-color: var(--present-b); }
 .empty .item { background: transparent; border: 2px dashed var(--text2); }
+
+.sum .item { width: min(32px, (100cqw - 8px) / var(--columns)); height: 40px; }

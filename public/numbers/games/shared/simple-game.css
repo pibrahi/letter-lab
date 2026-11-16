@@ -1,32 +1,40 @@
 body { overflow: hidden; }
 .game { width: 100%; max-width: 720px; height: 100dvh; margin: auto; padding: 12px 16px 24px; display: flex; flex-direction: column; position: relative; z-index: 1; }
-.game header { display: flex; align-items: center; gap: 10px; width: 100%; padding: 0; margin: 0; min-height: 48px; border: 0; }
+.game header { display: flex; align-items: center; gap: 6px; width: 100%; padding: 0; margin: 0; min-height: 48px; border: 0; }
 .home { font-size: 2.2rem; text-decoration: none; padding: 4px; }
 .level { font-size: 0.95rem; color: var(--viridian-text); background: var(--viridian-bg); border: 1px solid var(--viridian-text); border-radius: 20px; padding: 6px 8px; white-space: nowrap; }
-.stars { display: flex; gap: 4px; margin-left: auto; font-size: 1.7rem; }
+.stars { display: flex; gap: 2px; margin-left: auto; font-size: clamp(19px, 5vw, 27px); }
 .stars span { color: var(--text3); }
 .stars span.lit { color: var(--hint-gold); }
 body.grownup .stars span.lit { color: var(--hint-gold-bright); }
 #play, #end { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: space-evenly; gap: 20px; }
 [hidden] { display: none !important; }
-.picture { position: relative; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+.picture { width: 100%; container-type: inline-size; position: relative; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
 .items { display: grid; gap: 8px; justify-content: center; justify-items: center; align-content: center; }
-.item { line-height: 1.15; }
-.size-s .item { font-size: clamp(56px, 16vw, 88px); }
-.size-m .item { font-size: clamp(36px, 10vw, 56px); }
-.size-l .item { font-size: clamp(26px, 7vw, 40px); }
-.sum .size-s .item { font-size: clamp(40px, 11vw, 72px); }
+.item { line-height: 1.15; max-width: 100%; }
+/* Reserve grid gaps/padding and room for emoji fonts wider than one em. */
+.size-s .item { font-size: min(88px, (100cqw - 64px) / var(--columns) / 1.3); }
+.size-m .item { font-size: min(56px, (100cqw - 64px) / var(--columns) / 1.3); }
+.size-l .item { font-size: min(40px, (100cqw - 64px) / var(--columns) / 1.3); }
+
 .comparison, .sum { display: flex; align-items: center; justify-content: space-around; gap: 12px; width: 100%; }
-.comparison .items { gap: 4px; }
+.comparison .items, .sum .items { gap: 4px; }
+.comparison > *, .sum .items { flex: 1; min-width: 0; container-type: inline-size; }
+.comparison .item, .sum .item { font-size: min(72px, (100cqw - 8px) / var(--columns) / 1.3); }
+.comparison > .compare-a { background: var(--viridian-bg); border-color: var(--viridian-text); color: var(--viridian-text); }
+.comparison > .compare-b { background: var(--present); border-color: var(--present-b); color: var(--present-txt); }
+.compare-cue { font-size: 44px; line-height: 1; color: var(--text2); }
 .comparison > * { flex: 1; padding: 12px 6px; border: 2px solid var(--border2); border-radius: 16px; }
-.equation { font: 700 clamp(44px, 12vw, 80px) var(--font-mono); text-align: center; white-space: nowrap; }
+.equation { font: 700 clamp(24px, 7.5vw, 64px) var(--font-mono); text-align: center; white-space: nowrap; }
 .operator { font-size: 2.5rem; }
 .sequence { display: flex; gap: 8px; width: 100%; justify-content: center; }
-.sequence span { flex: 1; max-width: 120px; text-align: center; padding: 16px 0; border: 2px solid var(--border2); border-radius: 12px; font: 700 clamp(24px, 6vw, 48px) var(--font-mono); }
+.sequence span { flex: 1; min-width: 0; max-width: 120px; text-align: center; padding: 16px 0; border: 2px solid var(--border2); border-radius: 12px; font: 700 clamp(18px, 6vw, 40px) var(--font-mono); }
 .blank { background: var(--viridian-bg); }
 .actions { display: flex; width: 100%; gap: 16px; }
 .choice, .end-button { flex: 1; min-width: 0; min-height: 112px; padding: 10px 4px; border: 3px solid var(--border2); border-radius: 18px; background: var(--surface); color: var(--text); font: 700 clamp(36px, 10vw, 64px) var(--font-mono); cursor: pointer; }
 .end-button { display: flex; justify-content: center; align-items: center; text-decoration: none; }
+.choice.compare-a { border-color: var(--viridian-text); background: var(--viridian-bg); color: var(--viridian-text); }
+.choice.compare-b { border-color: var(--present-b); background: var(--present); color: var(--present-txt); }
 .choice.correct { background: var(--correct); color: var(--correct-txt); border-color: var(--correct-b); }
 .faded { opacity: 0.4; }
 .dots { position: relative; display: block; width: 70px; height: 32px; margin: 6px auto 0; }

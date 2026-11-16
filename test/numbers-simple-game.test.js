@@ -4,11 +4,11 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 
 // Exercise the real runner with a small DOM and a manually advanced clock.
-function setup({theme = 'dino', reduced = false} = {}) {
+function setup({theme = 'dino', reduced = false, challenge} = {}) {
   let focused = null, saves = 0, confetti = 0;
   class Element {
     constructor(tag = 'div') {
-      this.tag = tag; this.children = []; this.dataset = {}; this.attributes = {}; this.style = {}; this.listeners = {};
+      this.tag = tag; this.children = []; this.dataset = {}; this.attributes = {}; this.style = {setProperty:(key, value) => { this.style[key] = value; }}; this.listeners = {};
       this.classes = new Set(); this.classList = {add:(...names) => names.forEach(n => this.classes.add(n))};
     }
     set className(value) { this.classes = new Set(value.split(' ')); }
@@ -30,7 +30,7 @@ function setup({theme = 'dino', reduced = false} = {}) {
   const engine = {
     makeChallenge(tier, rng, opts) {
       requests.push({tier, opts});
-      return theme === 'dino' ? {tier, type:'count', count:2, answer:2, choices:[1,2,3]} : {tier, type:'add', a:1, b:1, answer:2, choices:[1,2,3]};
+      return challenge || (theme === 'dino' ? {tier, type:'count', count:2, answer:2, choices:[1,2,3]} : {tier, type:'add', a:1, b:1, answer:2, choices:[1,2,3]});
     },
     checkAnswer:(c, value) => value === c.answer,
     dotPattern:() => [[0.5,0.5]],
@@ -91,3 +91,24 @@ test('zero-win rounds still show one baby dinosaur', () => {
   for (let i = 0; i < 5; i++) { game.ids.actions.children[0].click(); game.advance(); }
   assert.equal(game.stars.at(-1), 0); assert.equal(game.ids.parade.textContent, '🦕');
 });
+
+for (const [left,right] of [[4,2], [1,10], [99,98]]) {
+  test(`compare ${left} vs ${right} links ordered groups and answers with a quiet cue`, () => {
+    const game = setup({challenge:{type:'more', tier:1, left, right, answer:Math.max(left,right), choices:[right,left]}});
+    const [cue,row] = game.ids.picture.children;
+    assert.ok(cue.classes.has('compare-cue'));
+    assert.equal(cue.attributes['aria-hidden'], 'true');
+    assert.equal(cue.textContent, '⚖');
+    assert.match(game.ids.picture.attributes['aria-label'], /Which is more/);
+    for (const [i,value] of [left,right].entries()) {
+      const cls = i === 0 ? 'compare-a' : 'compare-b';
+      assert.ok(row.children[i].classes.has(cls));
+      assert.ok(game.ids.actions.children[i].classes.has(cls));
+      assert.equal(game.ids.actions.children[i].dataset.value, value);
+      if (value > 10) assert.equal(row.children[i].textContent, String(value));
+      else assert.equal(row.children[i].children.length, value);
+    }
+    game.ids.actions.children[[left,right].indexOf(Math.max(left,right))].click();
+    assert.equal(game.stars.at(-1), 1);
+  });
+}
