@@ -1,3 +1,4 @@
+/* global openModal, closeModal */
 (function () {
   const {levels, store, adapt} = NumberLab;
   let state = store.load();
@@ -37,30 +38,11 @@
     el('tierButtons').appendChild(button);
   });
   function disarmReset() { clearTimeout(resetTimer); resetArmed = false; el('resetBtn').textContent = 'Reset progress'; }
-  function closeAdmin() {
-    disarmReset(); el('adminOverlay').classList.remove('show'); el('homeView').inert = false; el('adminBtn').focus();
-  }
-  el('adminBtn').addEventListener('click', () => {
-    el('homeView').inert = true;
-    openGate(() => { render(); el('adminOverlay').classList.add('show'); el('tierButtons').querySelector('[aria-pressed="true"]').focus(); }, {wrongClass:'gate-wrong'});
-    el('gateButtons').querySelector('button').focus();
-  });
-  function cancelGate() { closeGate(); el('homeView').inert = false; el('adminBtn').focus(); }
-  el('gateCancelBtn').addEventListener('click', cancelGate);
-  el('gateOverlay').addEventListener('click', e => { if (e.target === el('gateOverlay')) cancelGate(); });
-  el('closeAdminBtn').addEventListener('click', closeAdmin);
-  el('adminOverlay').addEventListener('click', e => { if (e.target === el('adminOverlay')) closeAdmin(); });
-  document.addEventListener('keydown', e => {
-    const overlay = document.querySelector('.admin-overlay.show');
-    if (!overlay) return;
-    if (e.key === 'Escape') { closeGate(); closeAdmin(); }
-    if (e.key === 'Tab') {
-      const buttons = [...overlay.querySelectorAll('button')];
-      const first = buttons[0], last = buttons[buttons.length - 1];
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-    }
-  });
+  el('adminBtn').addEventListener('click', () => openGate(() => {
+    render();
+    openModal(el('adminOverlay'), {focus: el('tierButtons').querySelector('[aria-pressed="true"]'), returnFocus: el('adminBtn'), onClose: disarmReset});
+  }, {wrongClass:'gate-wrong'}));
+  el('closeAdminBtn').addEventListener('click', () => closeModal(el('adminOverlay')));
   // Coming back from a game (including the back/forward cache) shows the new level.
   window.addEventListener('pageshow', e => { if (e.persisted) { state = store.load(); render(); } });
   el('floorLowest').addEventListener('click', () => { state.floorTier = 0; save(); });

@@ -6,7 +6,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const puppeteer = require('puppeteer-core');
 
-const viewports = [[320,568], [375,667], [390,844], [430,932], [1280,800]];
+const viewports = [[320,568], [375,667], [390,844], [430,932], [1280,800], [667,375], [568,320], [844,390], [932,430]];
 const countingCases = [
   {type:'count', count:20, answer:20, choices:[19,20,18]},
   ...[[10,9], [4,2], [1,10], [99,98]].map(([left,right]) => ({type:'more', left, right, answer:Math.max(left,right), choices:[left,right]})),
@@ -44,7 +44,7 @@ test('NumberLab pictures and controls fit every supported viewport and tier', {t
     for (const [width,height] of viewports) for (let tier = 0; tier <= 5; tier++) {
       const page = await browser.newPage();
       try {
-        await page.setViewport({width,height,isMobile:width < 500,hasTouch:width < 500});
+        await page.setViewport({width,height,isMobile:Math.min(width,height) < 500,hasTouch:Math.min(width,height) < 500,isLandscape:width > height});
         await page.emulateMediaFeatures([{name:'prefers-reduced-motion',value:'reduce'}]);
         await page.evaluateOnNewDocument(({tier,skill}) => {
           // Seed both the initial render and the subsequent real challenges.
@@ -72,6 +72,15 @@ test('NumberLab pictures and controls fit every supported viewport and tier', {t
               const r = el.getBoundingClientRect();
               if (!r.width || !r.height || getComputedStyle(el).visibility !== 'visible') continue;
               if (r.left < -0.5 || r.top < -0.5 || r.right > innerWidth + 0.5 || r.bottom > innerHeight + 0.5) failures.push({selector:selector(el),case:c,rect:r.toJSON()});
+            }
+            const obstacles = [...document.querySelectorAll('#actions button, .game header')];
+            for (const el of document.querySelectorAll('#picture *')) {
+              const r = el.getBoundingClientRect();
+              if (!r.width || !r.height || getComputedStyle(el).visibility !== 'visible') continue;
+              for (const other of obstacles) {
+                const b = other.getBoundingClientRect();
+                if (r.left < b.right && r.right > b.left && r.top < b.bottom && r.bottom > b.top) failures.push({selector:selector(el), overlaps:selector(other),case:c});
+              }
             }
             for (const el of document.querySelectorAll('.picture, .picture *')) {
               if (el.scrollWidth > el.clientWidth + 1) failures.push({selector:selector(el),case:c,scrollWidth:el.scrollWidth,clientWidth:el.clientWidth});

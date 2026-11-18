@@ -20,19 +20,16 @@
 </head>
 <body>
 <div class="toast" id="toast" role="status"></div>
-<div class="admin-overlay" id="gateOverlay">
-  <div class="admin-modal gate-modal">
-    <h2 class="gate-heading">// Grownup Check</h2>
+<dialog id="gateOverlay" class="admin-modal gate-modal" aria-labelledby="gateOverlayTitle">
+    <h2 id="gateOverlayTitle" class="gate-heading">// Grownup Check</h2>
     <p class="gate-question" id="gateQuestion" aria-live="polite">2 × 5 = ?</p>
     <div class="gate-choices" id="gateButtons" role="group" aria-label="Answer choices"></div>
     <p id="gateError" class="gate-error"></p>
     <div class="overlay-close"><button type="button" class="abtn ghost" id="gateCancelBtn">Cancel</button></div>
-  </div>
-</div>
+  </dialog>
 
-<div class="admin-overlay" id="adminOverlay">
-  <div class="admin-modal" role="dialog" aria-modal="true" aria-label="NumberLab settings">
-    <h2>// Grownup Settings</h2>
+<dialog id="adminOverlay" class="admin-modal" aria-labelledby="adminOverlayTitle">
+    <h2 id="adminOverlayTitle">// Grownup Settings</h2>
     <p class="admin-sub">NumberLab settings</p>
     <section class="admin-section">
       <h3>Difficulty</h3>
@@ -56,8 +53,7 @@
       </button>
     </section>
     <div class="overlay-close"><button type="button" class="abtn ghost" id="closeAdminBtn">Close</button></div>
-  </div>
-</div>
+  </dialog>
 <div class="numbers-view" id="homeView">
   <header>
     <div><h1 class="hub-logo">Number<span>Lab</span></h1><div class="hub-logo-sub">Maths Centre</div></div>

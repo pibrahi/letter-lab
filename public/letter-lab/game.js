@@ -1,3 +1,4 @@
+/* global openModal, closeModal */
 (function () {
   const data = {
   "@context": "https://schema.org",
@@ -498,10 +499,6 @@ function showEndScreen() {
   document.getElementById('endOverlay').classList.add('show');
 }
 
-document.getElementById('gateOverlay').addEventListener('click',e=>{ if(e.target===document.getElementById('gateOverlay')) closeGate(); });
-document.getElementById('gateCloseBtn').addEventListener('click', closeGate);
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&document.getElementById('gateOverlay').classList.contains('show')) closeGate(); });
-
 // =====================================================================
 //  ADMIN / SETTINGS
 // =====================================================================
@@ -509,9 +506,9 @@ function openAdmin() {
   updateAdminCurrentWord(); updateAdminStats();
   document.getElementById('hintsEnabledSelect').value=state.hintsEnabled?'yes':'no';
   syncLenUI(); applyLetterLabMode(); syncGuidedUI();
-  document.getElementById('adminOverlay').classList.add('show');
+  openModal(document.getElementById('adminOverlay'), {returnFocus: document.getElementById('adminBtn')});
 }
-function closeAdmin() { document.getElementById('adminOverlay').classList.remove('show'); }
+function closeAdmin() { closeModal(document.getElementById('adminOverlay')); }
 function updateAdminCurrentWord() {
   const el=document.getElementById('adminCurrentWord');
   if(el) el.textContent=`${state.currentWord} (${state.wordLength}L)`;
@@ -717,7 +714,7 @@ document.getElementById('editorBackBtn').addEventListener('click', () => {
 // =====================================================================
 document.addEventListener('keydown', e => {
   if (!document.getElementById('gameView').classList.contains('active')) return;
-  if (document.getElementById('adminOverlay').classList.contains('show')) return;
+  if (document.getElementById('adminOverlay').open) return;
   if (document.getElementById('helpOverlay').classList.contains('show')) return;
   if (e.key==='Backspace') handleKey('BACKSPACE');
   else if (e.key==='Enter') handleKey('ENTER');
@@ -728,7 +725,6 @@ document.getElementById('nextBtn').addEventListener('click', () => { startGame()
 document.getElementById('playAgainBtn').addEventListener('click', () => startGame());
 document.getElementById('adminBtn').addEventListener('click', () => openGate(openAdmin, {wrongClass: 'wrong'}));
 document.getElementById('closeAdminBtn').addEventListener('click', closeAdmin);
-document.getElementById('adminOverlay').addEventListener('click', e => { if(e.target===document.getElementById('adminOverlay')) closeAdmin(); });
 document.getElementById('helpBtn').addEventListener('click', () => document.getElementById('helpOverlay').classList.add('show'));
 document.getElementById('closeHelpBtn').addEventListener('click', () => document.getElementById('helpOverlay').classList.remove('show'));
 document.getElementById('helpOverlay').addEventListener('click', e => { if(e.target===document.getElementById('helpOverlay')) document.getElementById('helpOverlay').classList.remove('show'); });

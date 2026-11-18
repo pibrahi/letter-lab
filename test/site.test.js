@@ -147,3 +147,14 @@ test("workers.dev is off and www is a custom domain", () => {
   assert.match(config, /pattern\s*=\s*"letterlab\.cc"/);
   assert.match(config, /custom_domain\s*=\s*true/);
 });
+
+test("reduced motion is respected site-wide", () => {
+  const css = fs.readFileSync(path.join(__dirname, "../public/_shared/lab.css"), "utf8");
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)\s*\{\s*\*, \*::before, \*::after \{ animation: none !important; transition: none !important;/);
+  const js = fs.readFileSync(path.join(__dirname, "../public/_shared/lab.js"), "utf8");
+  assert.match(js, /function launchConfetti[^{]*\{\s*if \(window\.matchMedia\('\(prefers-reduced-motion: reduce\)'\)\.matches\) return;/);
+  const walk = dir => fs.readdirSync(dir, {withFileTypes: true}).flatMap(e => e.isDirectory() ? walk(path.join(dir, e.name)) : e.name.endsWith(".css") ? [path.join(dir, e.name)] : []);
+  for (const file of walk(path.join(__dirname, "../public"))) {
+    assert.doesNotMatch(fs.readFileSync(file, "utf8"), /animation[^;{}]*\binfinite\b/, `${file} has an infinite animation`);
+  }
+});

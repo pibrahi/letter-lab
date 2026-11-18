@@ -259,3 +259,5 @@ Letter Lab collects no personal data. See [letterlab.cc/privacy](https://letterl
 ---
 
 *Made with 🩵 for L & G*
+
+Grownup checks and settings use native modal dialogs, with keyboard dismissal and a visible close or cancel control. Reduced-motion preferences disable decorative animation and confetti.

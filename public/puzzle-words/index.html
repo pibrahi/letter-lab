@@ -23,19 +23,18 @@
 <div class="toast" id="toast"></div>
 
 <!-- GATE -->
-<div class="admin-overlay" id="gateOverlay">
-  <div class="admin-modal gate-modal">
-    <h2 class="gate-heading">// Grownup Check</h2>
+<dialog id="gateOverlay" class="admin-modal gate-modal" aria-labelledby="gateOverlayTitle">
+    <h2 id="gateOverlayTitle" class="gate-heading">// Grownup Check</h2>
     <p class="gate-question" id="gateQuestion" aria-live="polite">2 × 5 = ?</p>
     <div class="gate-choices" id="gateButtons" role="group" aria-label="Answer choices"></div>
     <p id="gateError" class="gate-error"></p>
-  </div>
-</div>
+
+    <div class="overlay-close"><button type="button" class="abtn ghost" id="gateCancelBtn">Cancel</button></div>
+</dialog>
 
 <!-- ADMIN -->
-<div class="admin-overlay" id="adminOverlay">
-  <div class="admin-modal">
-    <h2>// Grownup Mode</h2>
+<dialog id="adminOverlay" class="admin-modal" aria-labelledby="adminOverlayTitle">
+    <h2 id="adminOverlayTitle">// Grownup Mode</h2>
     <p class="admin-sub">Puzzle Words settings</p>
 
     <div class="admin-section">
@@ -66,8 +65,7 @@
     <div class="overlay-close">
       <button class="abtn ghost" id="closeAdminBtn">Close</button>
     </div>
-  </div>
-</div>
+  </dialog>
 
 <!-- GAME -->
 <div id="gameView" class="view active view-pad">

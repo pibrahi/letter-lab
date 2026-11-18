@@ -11,6 +11,7 @@ function showToast(msg) {
 }
 
 function launchConfetti(grownup) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const kc = ['#ff6b6b','#4ecdc4','#ffe66d','#a78bfa','#5cb85c','#f0ad4e','#ff9ff3'];
   const ac = ['#40826D','#52a88e','#e6b830','#8aad9f','#c2ddd5'];
   const colors = grownup ? ac : kc;
@@ -32,9 +33,27 @@ function applyGrownup(on) {
   document.body.classList.toggle('grownup', on);
 }
 
-function closeGate() {
-  document.getElementById('gateOverlay').classList.remove('show');
+function openModal(dialog, {focus, returnFocus, onClose} = {}) {
+  const previous = returnFocus || document.activeElement;
+  const closed = () => {
+    if (onClose) onClose();
+    if (previous && previous.isConnected && !document.querySelector('dialog:modal')) previous.focus();
+  };
+  dialog.addEventListener('close', closed, {once: true});
+  dialog.showModal();
+  if (focus) focus.focus();
 }
+function closeModal(dialog) { if (dialog.open) dialog.close(); }
+function closeGate() { closeModal(document.getElementById('gateOverlay')); }
+
+if (typeof document !== 'undefined') document.addEventListener('click', e => {
+  const dialog = e.target;
+  if (!(dialog instanceof HTMLDialogElement) || !dialog.open) return;
+  const r = dialog.getBoundingClientRect();
+  if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) closeModal(dialog);
+});
+if (typeof document !== 'undefined') document.getElementById('gateCloseBtn')?.addEventListener('click', closeGate);
+if (typeof document !== 'undefined') document.getElementById('gateCancelBtn')?.addEventListener('click', closeGate);
 
 // Choose from a finite pool so even a constant RNG cannot stall on reopening.
 const gatePool = [];
@@ -89,8 +108,9 @@ function openGate(onSuccess, options = {}) {
     btn.style.cssText = 'min-width:52px;font-size:1rem;padding:10px 0;';
     btn.addEventListener('click', () => {
       if (n === question.answer) {
+        const invoker = document.getElementById('adminBtn');
         closeGate();
-        onSuccess();
+        onSuccess(invoker);
       } else {
         err.textContent = 'Not quite — try again';
         if (options.wrongClass) {
@@ -105,7 +125,7 @@ function openGate(onSuccess, options = {}) {
     });
     container.appendChild(btn);
   });
-  document.getElementById('gateOverlay').classList.add('show');
+  openModal(document.getElementById('gateOverlay'), {focus: container.querySelector('button')});
 }
 
 // Shared grownup toggle UI update — call after toggling state.grownup
