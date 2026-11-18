@@ -1,3 +1,4 @@
+/* global openModal, closeModal */
 (function () {
   const data = {
   "@context": "https://schema.org",
@@ -213,15 +214,9 @@ function syncAdminUI() {
 
 document.getElementById('adminBtn').addEventListener('click', () => openGate(() => {
   syncAdminUI();
-  document.getElementById('adminOverlay').classList.add('show');
+  openModal(document.getElementById('adminOverlay'), {returnFocus: document.getElementById('adminBtn'), onClose: startRound});
 }));
-document.getElementById('closeAdminBtn').addEventListener('click', () => {
-  document.getElementById('adminOverlay').classList.remove('show');
-  startRound();
-});
-document.getElementById('adminOverlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('adminOverlay')) { document.getElementById('adminOverlay').classList.remove('show'); startRound(); }
-});
+document.getElementById('closeAdminBtn').addEventListener('click', () => closeModal(document.getElementById('adminOverlay')));
 document.getElementById('grownupToggleBtn').addEventListener('click', () => { st.grownup = !st.grownup; syncGrownupBtn(st.grownup); });
 document.querySelectorAll('.mode-opt').forEach(b => b.addEventListener('click', () => { st.mode = b.dataset.mode; syncAdminUI(); }));
 document.querySelectorAll('.len-opt').forEach(b => b.addEventListener('click', () => { st.wordLen = parseInt(b.dataset.len); syncAdminUI(); }));

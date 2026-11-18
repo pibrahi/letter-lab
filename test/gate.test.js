@@ -29,8 +29,13 @@ test('gate questions have valid arithmetic and five distinct positive choices', 
   assert.notEqual(nextGateQuestion(() => 0).text, nextGateQuestion(() => 0).text);
 });
 test('all games expose an announced gate question and answer group', () => {
-  for (const game of ['letter-lab','spelling-academy','word-safari','puzzle-words','memory-match']) {
+  for (const game of ['letter-lab','spelling-academy','word-safari','puzzle-words','memory-match','numbers']) {
     const html = readFileSync(`public/${game}/index.html`, 'utf8');
+    for (const id of ['gateOverlay', 'adminOverlay']) {
+      assert.match(html, new RegExp(`<dialog id="${id}"[^>]*aria-labelledby=`));
+      assert.doesNotMatch(html.match(new RegExp(`<dialog id="${id}"[^>]*>`))[0], /role=|aria-modal=/);
+    }
+    assert.match(html, /id="gate(?:Close|Cancel)Btn"/);
     assert.match(html, /id="gateQuestion" aria-live="polite"/);
     assert.match(html, /id="gateButtons" role="group" aria-label="Answer choices"/);
   }
@@ -40,12 +45,16 @@ test('openGate renders a fresh question and accepts only its answer', () => {
   const elements = {};
   const element = () => ({textContent:'', innerHTML:'', style:{}, classList:{add(){},remove(){}}, setAttribute(){}, appendChild(b){this.buttons.push(b);}, buttons:[]});
   for (const id of ['gateQuestion','gateButtons','gateError','gateOverlay']) elements[id] = element();
-  const context = vm.createContext({document:{getElementById:id => elements[id],createElement:element},setTimeout(){}});
+  elements.gateButtons.querySelector = () => elements.gateButtons.buttons[0];
+  elements.gateOverlay.showModal = () => { elements.gateOverlay.open = true; };
+  elements.gateOverlay.close = () => { elements.gateOverlay.open = false; };
+  elements.gateOverlay.addEventListener = () => {};
+  const context = vm.createContext({document:{getElementById:id => elements[id],createElement:element,addEventListener(){}},setTimeout(){}});
   vm.runInContext(readFileSync('public/_shared/lab.js','utf8'),context);
   let previous;
   for (let i=0;i<20;i++) {
     let successes = 0;
-    context.document.createElement = () => ({...element(),addEventListener(type,fn){this.click=fn;}});
+    context.document.createElement = () => ({...element(),addEventListener(type,fn){this.click=fn;},focus(){}});
     elements.gateButtons.buttons = [];
     context.openGate(() => successes++);
     const text = elements.gateQuestion.textContent;

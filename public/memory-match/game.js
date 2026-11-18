@@ -1,3 +1,4 @@
+/* global openModal, closeModal */
 const WORDS_LIB = typeof LAB_WORDS !== 'undefined' ? LAB_WORDS : require('../_shared/words.js');
 const ANIMALS = WORDS_LIB.pick('memoryAnimals');
 const MODES = {picture:'Picture Pairs', word:'Picture & Word', letter:'Big & Little'};
@@ -155,11 +156,10 @@ if (typeof document !== 'undefined') {
     syncUI(); save();
   }
   el('adminBtn').addEventListener('click', () => openGate(() => {
-    syncUI(); el('adminOverlay').classList.add('show'); el('closeAdminBtn').focus();
+    syncUI(); openModal(el('adminOverlay'), {focus: el('closeAdminBtn'), returnFocus: el('adminBtn')});
   }));
-  function closeAdmin() { el('adminOverlay').classList.remove('show'); el('adminBtn').focus(); }
+  function closeAdmin() { closeModal(el('adminOverlay')); }
   el('closeAdminBtn').addEventListener('click', closeAdmin);
-  el('adminOverlay').addEventListener('click', e => { if (e.target === el('adminOverlay')) closeAdmin(); });
   el('grownupToggleBtn').addEventListener('click', () => {
     st.grownup = !st.grownup; syncUI(); save();
   });

@@ -5,3 +5,9 @@
 .empty .item { background: transparent; border: 2px dashed var(--text2); }
 
 .sum .item { width: min(32px, (100cqw - 8px) / var(--columns)); height: 40px; }
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .size-s .item, .size-m .item, .item { width: min(28px, 6dvh); height: min(40px, 8dvh); }
+  .sum .item { width: min(28px, 6dvh, (100cqw - 8px) / var(--columns)); height: min(40px, 7dvh); }
+  .sum + .equation { font-size: clamp(20px, min(7dvh, 13cqw), 36px); }
+}

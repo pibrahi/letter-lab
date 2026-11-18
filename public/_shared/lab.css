@@ -225,12 +225,8 @@ body.grownup .gear-btn { border-color: var(--viridian); color: var(--viridian); 
 @keyframes confettiFall { 0%{opacity:1} 85%{opacity:1} 100%{opacity:0;transform:translateY(108vh) rotate(600deg)} }
 
 /* Admin overlay */
-.admin-overlay {
-  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 60;
-  align-items: center; justify-content: center; backdrop-filter: blur(6px);
-}
-.admin-overlay.show { display: flex; }
-.admin-modal {
+dialog.admin-modal {
+  margin: auto; overscroll-behavior: contain;
   background: var(--admin-bg); border: 2px solid var(--brand-viridian); border-radius: var(--radius-lg);
   padding: 26px; max-width: 420px; width: 92%; max-height: 88vh; overflow-y: auto;
   color: var(--admin-text); box-shadow: 0 0 0 4px var(--admin-accent-wash), 0 24px 80px rgba(0,0,0,0.7);
@@ -325,3 +321,9 @@ footer {
 
 button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--viridian); outline-offset: 3px; }
 .admin-modal :focus-visible { outline-color: var(--admin-highlight); }
+
+dialog.admin-modal::backdrop { background: rgba(0,0,0,0.65); backdrop-filter: blur(6px); overflow: hidden; overscroll-behavior: contain; }
+html:has(dialog[open]:modal) { overflow: hidden; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
